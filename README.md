@@ -1,73 +1,111 @@
-# React + TypeScript + Vite
+# ☕ coffee-diagnosis（おすすめコーヒー診断）
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1. このアプリについて（概要）
 
-Currently, two official plugins are available:
+**coffee-diagnosis** は、ユーザーが6つの質問に答えることで  
+コーヒーの好みを以下の3軸で数値化し、
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ロースト（焙煎の深さ）
+- 酸味
+- コク（ボディ）
 
-## React Compiler
+その結果をもとに **8タイプのコーヒー嗜好タイプ**に分類し、  
+**おすすめのコーヒー豆を1位・2位で提示する診断アプリ**です。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+本アプリは以下を重視しています。
 
-## Expanding the ESLint configuration
+- 割引・クーポン等は扱わない（体験重視）
+- スマートフォン利用を前提（QRコードからのアクセス想定）
+- 回答を変えると結果が即時に変わるインタラクティブな体験
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 2. 開発背景・目的
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+このアプリは「学生課題」ではなく、  
+**実際のプロダクト開発に近いプロセスを学ぶこと**を目的として開発されています。
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+特に以下を重視しています。
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- ロジック（診断・分類）とUIの責務分離
+- 小さな変更で壊れない設計
+- AI（Claude等）を“開発補助”として安全に使う運用
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+そのため、本リポジトリでは  
+**「AIが勝手に構造を変えて破壊すること」を明確に禁止**しています。
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## 3. 技術構成
+
+- Framework: React + TypeScript
+- Build Tool: Vite
+- 実行環境: Node.js
+- 主なディレクトリ構成：
+
+
+---
+
+## 4. 🚨 AI（Claude等）がコードを書き換える際の絶対ルール 🚨
+
+> **このセクションは、Claude を含む AI が必ず最初に読む前提です**
+
+### ❌ 絶対にやってはいけないこと
+
+- `src/data` 内のファイル構造・型・export名を勝手に変更しない
+- `src/logic` 内の関数名・引数・戻り値を勝手に変更しない
+- 既存のロジックを「より良い方法がある」と言って書き換えない
+- `package.json` を丸ごと書き換えない
+- 動いているコードを「整理」「最適化」「再設計」しない
+
+> **現在のコードは「意図的にそう書かれている」可能性が高い**
+
+---
+
+### ✅ 許可されていること
+
+- UIコンポーネントの新規追加（`src/components` 配下）
+- JSXの切り出し（見た目・挙動が完全に同一であること）
+- propsとして値を受け取る形への分割
+- CSSの追加・調整（最低限から始める）
+
+---
+
+### 🔒 最重要ルール（必ず守ること）
+
+1. **既存の export / 関数名 / 型名は一文字も変更しない**
+2. **差分は最小限にする**
+3. **「今動いている挙動」と完全に一致することを最優先**
+4. **まず壊さない。改善はその後**
+
+---
+
+## 5. Claudeへの作業指示テンプレ（毎回これを前提にする）
+
+Claudeは以下を前提として作業すること：
+
+- この README.md のルールをすべて遵守する
+- 変更前後でアプリの挙動が変わらないことを保証する
+- 変更理由を必ず説明する
+- 大きな変更を行う前に「この変更をしてよいか」を確認する
+
+---
+
+## 6. 現在の開発フェーズ
+
+- 診断ロジック・データ定義：完成済み
+- UI：動作確認済み（App.tsx に集約）
+- 現在の最優先タスク：
+  **App.tsx を壊さずにコンポーネント分割すること**
+
+---
+
+## 7. 最後に（AIへのメッセージ）
+
+> このプロジェクトは  
+> **「動いているものを壊さずに、少しずつ良くする」ことを目的としています。**
+
+賢さよりも、慎重さを優先してください。  
+改善よりも、再現性と安全性を優先してください。
+
+☕
