@@ -1,12 +1,50 @@
 // src/App.tsx
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import "./App.css";
-import { FiveStepMeter } from "./components/FiveStepMeter";
 
+import { HomePage } from "./pages/HomePage";
+import { DiagnosisPage } from "./pages/DiagnosisPage";
+import { CollectionPage } from "./pages/CollectionPage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { TabBar, type TabId } from "./components/TabBar";
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<TabId>("home");
+
+  // ページコンポーネントを切り替え
+  function renderPage() {
+    switch (activeTab) {
+      case "home":
+        return <HomePage />;
+      case "diagnosis":
+        return <DiagnosisPage />;
+      case "collection":
+        return <CollectionPage />;
+      case "settings":
+        return <SettingsPage />;
+      default:
+        return <HomePage />;
+    }
+  }
+
+  return (
+    <div className="app-container">
+      <main className="page-content">{renderPage()}</main>
+      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+    </div>
+  );
+}
+
+/* 
+  ============================================================
+  既存の診断機能コードを温存（DiagnosisPage に移植する際に参照）
+  ============================================================
+
+import { useMemo } from "react";
+import { FiveStepMeter } from "./components/FiveStepMeter";
 import { QUESTIONS } from "./data/questions";
 import { COFFEE_TYPES } from "./data/types";
 import { COFFEE_BEANS } from "./data/beans";
-
 import {
   computeScores,
   createEmptyAnswers,
@@ -78,7 +116,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Result Card */}
       <section
         style={{
           border: "1px solid rgba(255,255,255,0.15)",
@@ -177,7 +214,6 @@ export default function App() {
           </button>
         </div>
 
-        {/* Accordion */}
         {expanded && (
           <div
             style={{
@@ -206,7 +242,6 @@ export default function App() {
         )}
       </section>
 
-      {/* Questions */}
       <section style={{ marginTop: 18 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
           <div style={{ fontWeight: 800, fontSize: 16 }}>質問</div>
@@ -262,7 +297,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* すべての質問を一覧で編集できる（後から選び直しやすい） */}
         <details style={{ marginTop: 12 }}>
           <summary style={{ cursor: "pointer", opacity: 0.85 }}>
             すべての質問を一覧で見る（選び直し）
@@ -320,3 +354,6 @@ export default function App() {
     </div>
   );
 }
+
+============================================================
+*/
