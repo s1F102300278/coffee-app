@@ -9,7 +9,8 @@
 .app-container {
   position: relative;
   min-height: 100vh;
-  padding-bottom: 70px; /* タブバーの高さ分 */
+  padding-bottom: 80px;
+  background-color: #f7f7f7;
 }
 
 /* ページコンテンツ */
@@ -18,7 +19,7 @@
   margin: 0 auto;
 }
 
-/* 下部固定タブバー */
+/* 下部固定タブバー（スタバ公式風） */
 .tab-bar {
   position: fixed;
   bottom: 0;
@@ -26,47 +27,266 @@
   right: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: rgba(24, 24, 24, 0.95);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 8px 0;
-  backdrop-filter: blur(10px);
+  background: white;
+  border-top: 1px solid #d4d4d4;
+  padding: 0;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
   z-index: 100;
 }
 
-/* タブボタン */
+/* タブボタン（スタバ公式風） */
 .tab-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 4px;
+  padding: 12px 8px 10px;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s;
-  color: rgba(255, 255, 255, 0.6);
-  min-height: 60px;
+  transition: none;
+  color: #00000080;
+  min-height: 70px;
+  border-radius: 0;
+  position: relative;
 }
 
 .tab-button:hover {
-  opacity: 0.8;
+  background-color: transparent;
 }
 
 .tab-button.active {
-  color: rgba(255, 255, 255, 1);
+  color: #00754a;
+}
+
+/* アクティブタブの上部インジケーター */
+.tab-button.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background: #00754a;
+  border-radius: 0 0 2px 2px;
 }
 
 .tab-icon {
-  font-size: 24px;
-  margin-bottom: 4px;
+  font-size: 28px;
+  margin-bottom: 2px;
+  line-height: 1;
 }
 
 .tab-label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-top: 2px;
 }
 
-/* 既存のスタイルは残す */
+/* スタバ風カードデザイン */
+.bean-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+.bean-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.bean-card:active {
+  transform: translateY(0);
+}
+
+.bean-image {
+  width: 100%;
+  height: 140px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.bean-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e3932;
+  line-height: 1.3;
+}
+
+/* 戻るボタン（スタバ風） */
+.back-button {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid #00754a;
+  background: white;
+  color: #00754a;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: #00754a;
+  color: white;
+}
+
+/* 詳細ページカード */
+.detail-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+.detail-image {
+  width: 100%;
+  height: 240px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+/* ページヘッダー */
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e3932;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  font-size: 15px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+/* セクションタイトル */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e3932;
+  margin-bottom: 16px;
+}
+
+/* グリッドレイアウト */
+.bean-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* プレースホルダページカード */
+.placeholder-card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  border: none;
+}
+
+.placeholder-text {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* ========== 診断ページ専用スタイル ========== */
+
+/* 診断開始ボタン */
+.diagnosis-start-button {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 50px;
+  border: none;
+  background: #00754a;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 117, 74, 0.25);
+}
+
+.diagnosis-start-button:hover {
+  background: #006241;
+  box-shadow: 0 6px 16px rgba(0, 117, 74, 0.35);
+  transform: translateY(-1px);
+}
+
+.diagnosis-start-button:active {
+  transform: translateY(0);
+}
+
+/* 診断結果カード */
+.result-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+.result-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.result-card:active {
+  transform: translateY(0);
+}
+
+/* 質問カード */
+.question-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 選択肢ボタン */
+.choice-button {
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 50px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 15px;
+  color: #1e3932;
+  display: flex;
+  align-items: center;
+}
+
+.choice-button:hover {
+  border-color: #00754a;
+  background: #f0fdf4;
+}
+
+.choice-button.selected {
+  border-color: #00754a;
+  background: #00754a;
+  color: white;
+}
+
+/* 既存のスタイルは削除または最小限に */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -74,25 +294,7 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+  filter: drop-shadow(0 0 2em #00754aaa);
 }
 
 .card {
