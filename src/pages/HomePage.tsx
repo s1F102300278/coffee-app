@@ -17,18 +17,25 @@ export function HomePage() {
   if (selectedBean) {
     return (
       <div style={{ padding: "16px 16px 80px" }}>
+        {/* 左上に戻るボタン */}
         <button
           onClick={closeDetail}
           style={{
-            padding: "8px 16px",
+            padding: "10px 16px",
             borderRadius: 8,
             border: "1px solid rgba(255,255,255,0.2)",
-            background: "transparent",
+            background: "rgba(255,255,255,0.05)",
             cursor: "pointer",
-            marginBottom: 16,
+            marginBottom: 20,
+            fontSize: 14,
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
           }}
         >
-          ← 戻る
+          <span style={{ fontSize: 16 }}>←</span>
+          <span>戻る</span>
         </button>
 
         <div
