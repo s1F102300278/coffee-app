@@ -10,16 +10,24 @@ type ChoiceId = "A" | "B" | "C";
 type QuestionsPageProps = {
   answers: Answers;
   onAnswerChange: (qid: keyof Answers, choice: ChoiceId) => void;
+  onViewResult: () => void;
   onBack: () => void;
 };
 
 function labelForAxis(axis: "roast" | "acidity" | "body") {
-  if (axis === "roast") return { left: "LIGHT", right: "DARK", name: "ロースト" };
-  if (axis === "acidity") return { left: "LOW", right: "HIGH", name: "酸味" };
+  if (axis === "roast")
+    return { left: "LIGHT", right: "DARK", name: "ロースト" };
+  if (axis === "acidity")
+    return { left: "LOW", right: "HIGH", name: "酸味" };
   return { left: "LIGHT", right: "FULL", name: "コク" };
 }
 
-export function QuestionsPage({ answers, onAnswerChange, onBack }: QuestionsPageProps) {
+export function QuestionsPage({
+  answers,
+  onAnswerChange,
+  onViewResult,
+  onBack,
+}: QuestionsPageProps) {
   const progressText = useMemo(() => {
     const answered = Object.values(answers).filter((v) => v != null).length;
     return `${answered}/${QUESTIONS.length}`;
@@ -54,7 +62,14 @@ export function QuestionsPage({ answers, onAnswerChange, onBack }: QuestionsPage
             <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 8 }}>
               質問 {qi + 1}/{QUESTIONS.length}
             </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#1e3932", marginBottom: 16 }}>
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 700,
+                color: "#1e3932",
+                marginBottom: 16,
+              }}
+            >
               {q.prompt}
             </div>
 
@@ -65,9 +80,13 @@ export function QuestionsPage({ answers, onAnswerChange, onBack }: QuestionsPage
                   <button
                     key={c.id}
                     onClick={() => onAnswerChange(q.id, c.id)}
-                    className={selected ? "choice-button selected" : "choice-button"}
+                    className={
+                      selected ? "choice-button selected" : "choice-button"
+                    }
                   >
-                    <span style={{ fontWeight: 700, marginRight: 8 }}>{c.id}</span>
+                    <span style={{ fontWeight: 700, marginRight: 8 }}>
+                      {c.id}
+                    </span>
                     <span>{c.text}</span>
                   </button>
                 );
@@ -81,7 +100,7 @@ export function QuestionsPage({ answers, onAnswerChange, onBack }: QuestionsPage
       {allAnswered && (
         <div style={{ marginTop: 32, position: "sticky", bottom: 90 }}>
           <button
-            onClick={onBack}
+            onClick={onViewResult}
             style={{
               width: "100%",
               padding: "16px",
@@ -111,7 +130,14 @@ export function QuestionsPage({ answers, onAnswerChange, onBack }: QuestionsPage
               boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)",
             }}
           >
-            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16, color: "#1e3932" }}>
+            <h3
+              style={{
+                fontSize: 18,
+                fontWeight: 700,
+                marginBottom: 16,
+                color: "#1e3932",
+              }}
+            >
               あなたの味わいの傾向
             </h3>
             {(["roast", "acidity", "body"] as const).map((axis) => {

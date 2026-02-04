@@ -386,6 +386,68 @@
   transform: translateY(0);
 }
 
+/* ========== 診断結果詳細ページ専用スタイル ========== */
+
+/* プロフィールに追加ボタン（主ボタン） */
+.profile-add-button {
+  width: 100%;
+  padding: 18px 24px;
+  border-radius: 50px;
+  border: none;
+  background: #00754a;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 117, 74, 0.25);
+}
+
+.profile-add-button:hover:not(:disabled) {
+  background: #006241;
+  box-shadow: 0 6px 16px rgba(0, 117, 74, 0.35);
+  transform: translateY(-1px);
+}
+
+.profile-add-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.profile-add-button.added {
+  background: #6b7280;
+  cursor: default;
+  box-shadow: none;
+}
+
+.profile-add-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 診断終了ボタン（サブボタン） */
+.diagnosis-close-button {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 50px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #6b7280;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.diagnosis-close-button:hover {
+  border-color: #00754a;
+  color: #00754a;
+  background: #f0fdf4;
+}
+
+.diagnosis-close-button:active {
+  transform: scale(0.98);
+}
+
 /* 既存のスタイルは削除または最小限に */
 .logo {
   height: 6em;

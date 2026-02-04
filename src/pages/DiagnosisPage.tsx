@@ -1,5 +1,5 @@
 // src/pages/DiagnosisPage.tsx
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { COFFEE_TYPES } from "../data/types";
 import { COFFEE_BEANS } from "../data/beans";
 import {
@@ -10,24 +10,59 @@ import {
 import { classifyType } from "../logic/classify";
 import { recommendTop2 } from "../logic/recommend";
 import { QuestionsPage } from "./diagnosis/QuestionsPage";
-import { ResultDetailPage } from "./diagnosis/ResultDetailPage";
 
 type ChoiceId = "A" | "B" | "C";
-type DiagnosisView = "main" | "questions" | "result-detail";
+type DiagnosisView = "main" | "questions" | "result";
 
-export function DiagnosisPage() {
+const STORAGE_KEY_DIAGNOSIS = "coffee-app-diagnosis-result";
+
+type DiagnosisPageProps = {
+  onDiagnosisAddedToProfile?: () => void;
+};
+
+export function DiagnosisPage({
+  onDiagnosisAddedToProfile,
+}: DiagnosisPageProps) {
   const [currentView, setCurrentView] = useState<DiagnosisView>("main");
   const [answers, setAnswers] = useState<Answers>(() => createEmptyAnswers());
   const [hasCompletedDiagnosis, setHasCompletedDiagnosis] = useState(false);
+  const [isAddedToProfile, setIsAddedToProfile] = useState(false);
 
   const scores = useMemo(() => computeScores(answers), [answers]);
-  const typeId = useMemo(() => classifyType(answers, scores), [answers, scores]);
+  const typeId = useMemo(
+    () => classifyType(answers, scores),
+    [answers, scores]
+  );
 
   const typeInfo = useMemo(() => {
     return COFFEE_TYPES.find((t) => t.id === typeId) ?? COFFEE_TYPES[0];
   }, [typeId]);
 
   const top2 = useMemo(() => recommendTop2(scores, COFFEE_BEANS), [scores]);
+
+  // 診断結果をlocalStorageに保存
+  useEffect(() => {
+    if (hasCompletedDiagnosis && currentView === "result") {
+      try {
+        const diagnosisResult = {
+          typeId,
+          typeName: typeInfo.name,
+          typeCatch: typeInfo.catch,
+          typeReason: typeInfo.reason,
+          firstBeanName: top2?.first.name || "",
+          secondBeanName: top2?.second.name || "",
+          timestamp: new Date().toISOString(),
+          addedToProfile: false,
+        };
+        localStorage.setItem(
+          STORAGE_KEY_DIAGNOSIS,
+          JSON.stringify(diagnosisResult)
+        );
+      } catch (err) {
+        console.error("Failed to save diagnosis result:", err);
+      }
+    }
+  }, [hasCompletedDiagnosis, currentView, typeId, typeInfo, top2]);
 
   function setAnswer(qid: keyof Answers, choice: ChoiceId) {
     setAnswers((prev) => ({ ...prev, [qid]: choice }));
@@ -37,18 +72,30 @@ export function DiagnosisPage() {
     setCurrentView("questions");
   }
 
-  function viewResultDetail() {
-    if (!hasCompletedDiagnosis) return;
-    setCurrentView("result-detail");
+  function viewResult() {
+    setHasCompletedDiagnosis(true);
+    setCurrentView("result");
   }
 
   function backToMain() {
-    // 質問ページから戻る場合、すべて回答済みなら診断完了とする
-    const allAnswered = Object.values(answers).every((v) => v != null);
-    if (allAnswered) {
-      setHasCompletedDiagnosis(true);
-    }
     setCurrentView("main");
+    setIsAddedToProfile(false);
+  }
+
+  function handleAddToProfile() {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
+      if (stored) {
+        const result = JSON.parse(stored);
+        result.addedToProfile = true;
+        localStorage.setItem(STORAGE_KEY_DIAGNOSIS, JSON.stringify(result));
+
+        setIsAddedToProfile(true);
+        onDiagnosisAddedToProfile?.();
+      }
+    } catch (err) {
+      console.error("Failed to add diagnosis to profile:", err);
+    }
   }
 
   // 質問ページ表示中
@@ -57,24 +104,144 @@ export function DiagnosisPage() {
       <QuestionsPage
         answers={answers}
         onAnswerChange={setAnswer}
+        onViewResult={viewResult}
         onBack={backToMain}
       />
     );
   }
 
-  // 結果詳細ページ表示中
-  if (currentView === "result-detail" && top2 && hasCompletedDiagnosis) {
+  // 結果画面表示中
+  if (currentView === "result" && top2) {
     return (
-      <ResultDetailPage
-        typeInfo={typeInfo}
-        firstBean={top2.first}
-        secondBean={top2.second}
-        onBack={backToMain}
-      />
+      <div style={{ padding: "20px 16px 100px" }}>
+        <header className="page-header">
+          <h1 className="page-title">診断結果</h1>
+          <p className="page-subtitle">あなたにぴったりのコーヒー</p>
+        </header>
+
+        <div className="detail-card">
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+              あなたのタイプ
+            </div>
+            <h2
+              style={{
+                fontSize: 26,
+                fontWeight: 700,
+                color: "#1e3932",
+                marginBottom: 12,
+              }}
+            >
+              {typeInfo.name}
+            </h2>
+            <p
+              style={{
+                fontSize: 16,
+                color: "#1e3932",
+                fontWeight: 600,
+                marginBottom: 16,
+              }}
+            >
+              {typeInfo.catch}
+            </p>
+            <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.6 }}>
+              {typeInfo.reason}
+            </p>
+          </div>
+
+          <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 24 }}>
+            <h3
+              style={{
+                fontSize: 20,
+                fontWeight: 700,
+                color: "#1e3932",
+                marginBottom: 16,
+              }}
+            >
+              おすすめの豆
+            </h3>
+
+            <div style={{ display: "grid", gap: 16 }}>
+              <div
+                style={{
+                  background: "#f9fafb",
+                  borderRadius: 16,
+                  padding: 16,
+                }}
+              >
+                <div
+                  style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}
+                >
+                  1位
+                </div>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: "#1e3932",
+                    marginBottom: 8,
+                  }}
+                >
+                  {top2.first.name}
+                </div>
+                <p style={{ fontSize: 14, color: "#6b7280" }}>
+                  {top2.first.note}
+                </p>
+              </div>
+
+              <div
+                style={{
+                  background: "#f9fafb",
+                  borderRadius: 16,
+                  padding: 16,
+                }}
+              >
+                <div
+                  style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}
+                >
+                  2位
+                </div>
+                <div
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: "#1e3932",
+                    marginBottom: 8,
+                  }}
+                >
+                  {top2.second.name}
+                </div>
+                <p style={{ fontSize: 14, color: "#6b7280" }}>
+                  {top2.second.note}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* アクションボタン */}
+        <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
+          {/* プロフィールに追加ボタン */}
+          <button
+            onClick={handleAddToProfile}
+            disabled={isAddedToProfile}
+            className={
+              isAddedToProfile ? "profile-add-button added" : "profile-add-button"
+            }
+          >
+            {isAddedToProfile ? "✓ プロフィールに追加済み" : "プロフィールに追加"}
+          </button>
+
+          {/* 診断終了ボタン */}
+          <button onClick={backToMain} className="diagnosis-close-button">
+            診断を終了
+          </button>
+        </div>
+      </div>
     );
   }
 
-  // メイン画面（診断結果表示）
+  // メイン画面（診断トップ）
   return (
     <div style={{ padding: "20px 16px 100px" }}>
       <header className="page-header">
@@ -83,120 +250,41 @@ export function DiagnosisPage() {
       </header>
 
       {/* 診断開始ボタン */}
-      <button
-        onClick={startDiagnosis}
-        className="diagnosis-start-button"
-      >
+      <button onClick={startDiagnosis} className="diagnosis-start-button">
         おすすめコーヒー診断開始
       </button>
 
-      {/* 診断結果カード */}
-      <div style={{ marginTop: 24 }}>
-        <h2 className="section-title">診断結果</h2>
-
-        {/* 診断未実施の場合 */}
-        {!hasCompletedDiagnosis && (
+      {/* 診断結果カード（診断済みの場合のみ表示） */}
+      {hasCompletedDiagnosis && (
+        <div style={{ marginTop: 24 }}>
+          <h2 className="section-title">前回の診断結果</h2>
           <div
             style={{
-              background: "#f3f4f6",
+              background: "white",
               borderRadius: 20,
-              padding:  "32px 24px",
-              textAlign: "center",
-              border: "2px dashed #d1d5db",
+              padding: 20,
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
             }}
           >
-            <div
-              style={{
-                fontSize: 48,
-                marginBottom: 12,
-                opacity: 0.3,
-              }}
-            >
-              ☕
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
+              あなたのタイプ
             </div>
             <div
               style={{
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: 700,
-                color: "#9ca3af",
+                color: "#1e3932",
                 marginBottom: 8,
               }}
             >
-              診断未実施
+              {typeInfo.name}
             </div>
-            <p
-              style={{
-                fontSize: 14,
-                color: "#9ca3af",
-                lineHeight: 1.6,
-              }}
-            >
-              上の診断開始ボタンを押して
-              <br />
-              あなたにぴったりのコーヒーを見つけましょう
+            <p style={{ fontSize: 14, color: "#6b7280" }}>
+              {typeInfo.catch}
             </p>
           </div>
-        )}
-
-        {/* 診断実施済みの場合 */}
-        {hasCompletedDiagnosis && (
-          <div
-            onClick={viewResultDetail}
-            className="result-card"
-          >
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
-                あなたのタイプ
-              </div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#1e3932", marginBottom: 8 }}>
-                {typeInfo.name}
-              </div>
-              <p style={{ fontSize: 15, color: "#1e3932", fontWeight: 600 }}>
-                {typeInfo.catch}
-              </p>
-            </div>
-
-            {top2 && (
-              <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 16 }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#1e3932", marginBottom: 12 }}>
-                  おすすめの豆
-                </div>
-                <div style={{ display: "grid", gap: 12 }}>
-                  <div
-                    style={{
-                      background: "#f9fafb",
-                      borderRadius: 12,
-                      padding: 12,
-                    }}
-                  >
-                    <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 2 }}>1位</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#1e3932" }}>
-                      {top2.first.name}
-                    </div>
-                  </div>
-
-                  <div
-                    style={{
-                      background: "#f9fafb",
-                      borderRadius: 12,
-                      padding: 12,
-                    }}
-                  >
-                    <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 2 }}>2位</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: "#1e3932" }}>
-                      {top2.second.name}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div style={{ marginTop: 16, fontSize: 13, color: "#00754a", textAlign: "center" }}>
-              タップして詳細を見る →
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
