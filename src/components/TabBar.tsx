@@ -1,6 +1,6 @@
 // src/components/TabBar.tsx
 
-export type TabId = "home" | "diagnosis" | "collection" | "settings";
+export type TabId = "home" | "profile" | "diagnosis" | "collection" | "settings";
 
 type TabBarProps = {
   activeTab: TabId;
@@ -10,6 +10,7 @@ type TabBarProps = {
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
   const tabs: { id: TabId; label: string; icon: string }[] = [
     { id: "home", label: "ホーム", icon: "🏠" },
+    { id: "profile", label: "プロフィール", icon: "👤" },
     { id: "diagnosis", label: "診断", icon: "☕" },
     { id: "collection", label: "コレクション", icon: "📚" },
     { id: "settings", label: "設定", icon: "⚙️" },

@@ -26,7 +26,7 @@
   left: 0;
   right: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   background: white;
   border-top: 1px solid #d4d4d4;
   padding: 0;
@@ -284,6 +284,106 @@
   border-color: #00754a;
   background: #00754a;
   color: white;
+}
+
+/* ========== 豆コレクション専用スタイル ========== */
+
+/* 豆コレクションカード */
+.collection-bean-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ポイント追加ボタン */
+.point-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 2px;
+  min-height: 70px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.point-button:hover {
+  border-color: #00754a;
+  background: #f0fdf4;
+  transform: translateY(-1px);
+}
+
+.point-button:active {
+  transform: translateY(0);
+}
+
+.point-button.enjoy:hover {
+  border-color: #00754a;
+  background: #ecfdf5;
+}
+
+.point-button.buy:hover {
+  border-color: #00754a;
+  background: #ecfdf5;
+}
+
+/* ポイントフィードバック */
+.point-feedback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  font-weight: 900;
+  pointer-events: none;
+  animation: feedbackPop 0.6s ease-out;
+  z-index: 10;
+}
+
+.point-feedback.add {
+  color: #00754a;
+}
+
+.point-feedback.remove {
+  color: #ef4444;
+}
+
+@keyframes feedbackPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -60%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(1);
+  }
+}
+
+/* ========== プロフィールページ専用スタイル ========== */
+
+/* プロフィールカードホバー効果 */
+.profile-card-hover:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.profile-card-hover:active {
+  transform: translateY(0);
 }
 
 /* 既存のスタイルは削除または最小限に */
