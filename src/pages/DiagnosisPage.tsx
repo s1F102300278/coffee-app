@@ -8,10 +8,33 @@ import { Q0_SPEC, determineRoute } from "../data/diagnosisSpec";
 import type {UserAnswers } from "../logic/diagnosisEngine";
 import { diagnose } from "../logic/diagnosisEngine";
 
+import { addProfileDiagnosis } from "../utils/storage";
 
-type DiagnosisView = "main" | "q0" | "questions" | "result";
+
+
+type DiagnosisView =
+  | "main"
+  | "q0"
+  | "questions"
+  | "result"
+  | "detail"
+  | "resultStored"
+  | "detailStored";
+
 
 const STORAGE_KEY_DIAGNOSIS = "coffee-app-diagnosis-result";
+
+type StoredDiagnosis = {
+  typeId?: string;
+  typeName?: string;
+  typeCatch?: string;
+  typeReason?: string;
+  firstBeanName?: string;
+  secondBeanName?: string;
+  timestamp?: string;
+  addedToProfile?: boolean;
+};
+
 
 type DiagnosisPageProps = {
   onDiagnosisAddedToProfile?: () => void;
@@ -22,7 +45,10 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
   const [hasCompletedDiagnosis, setHasCompletedDiagnosis] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
 
-  
+  const STORAGE_KEY_PROFILE = "coffee_profile_diagnoses";
+  const [storedDiagnosis, setStoredDiagnosis] = useState<StoredDiagnosis | null>(null);
+
+
 
   // ✅ 新エンジン用の回答形式（質問ID -> 選択肢 index 0-3）
   const [answers, setAnswers] = useState<UserAnswers>({});
@@ -70,6 +96,23 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
     }
   }, [hasCompletedDiagnosis, currentView, diagnosisResult, typeInfo, top1, top2]);
 
+  useEffect(() => {
+  if (currentView !== "main") return;
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
+    if (!stored) {
+      setStoredDiagnosis(null);
+      return;
+    }
+    setStoredDiagnosis(JSON.parse(stored) as StoredDiagnosis);
+  } catch (err) {
+    console.error("Failed to load stored diagnosis:", err);
+    setStoredDiagnosis(null);
+  }
+}, [currentView]);
+
+
   // ✅ QuestionsPage からは（qid, choiceIndex）で受け取りたい
   function setAnswer(questionId: string, choiceIndex: number) {
     setAnswers((prev) => ({ ...prev, [questionId]: choiceIndex }));
@@ -100,19 +143,40 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
 
 
   function handleAddToProfile() {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
-      if (stored) {
-        const result = JSON.parse(stored);
-        result.addedToProfile = true;
-        localStorage.setItem(STORAGE_KEY_DIAGNOSIS, JSON.stringify(result));
-        setIsAddedToProfile(true);
-        onDiagnosisAddedToProfile?.();
-      }
-    } catch (err) {
-      console.error("Failed to add diagnosis to profile:", err);
-    }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
+    if (!stored) return;
+
+    const result = JSON.parse(stored);
+
+    // ① 既存処理：診断結果に「追加済み」フラグ
+    result.addedToProfile = true;
+    localStorage.setItem(STORAGE_KEY_DIAGNOSIS, JSON.stringify(result));
+
+    // ② ★ここが追加ポイント：プロフィール用リストに保存
+    const profileStored = localStorage.getItem(STORAGE_KEY_PROFILE);
+    const profileList = profileStored ? JSON.parse(profileStored) : [];
+
+    profileList.unshift({
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      diagnosis: result,
+    });
+
+    localStorage.setItem(
+      STORAGE_KEY_PROFILE,
+      JSON.stringify(profileList)
+    );
+
+    // ③ UI更新
+    setIsAddedToProfile(true);
+    //onDiagnosisAddedToProfile?.();
+
+  } catch (err) {
+    console.error("Failed to add diagnosis to profile:", err);
   }
+}
+
 
   // 質問ページ表示中
   if (currentView === "questions") {
@@ -170,6 +234,184 @@ if (currentView === "q0") {
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// 詳細画面表示中
+if (currentView === "detail" && diagnosisResult && typeInfo && top1 && top2) {
+  return (
+    <div style={{ padding: "20px 16px 100px" }}>
+      <header className="page-header">
+        <h1 className="page-title">診断結果の詳細</h1>
+        <p className="page-subtitle">あなたに合う理由</p>
+      </header>
+
+      <div className="detail-card">
+        {/* セクション1：タイプ詳細 */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            あなたのコーヒータイプ
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1e3932", marginBottom: 12 }}>
+            {typeInfo.displayName}
+          </h2>
+          <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
+            {typeInfo.descriptionLong}
+          </p>
+        </div>
+
+        {/* セクション2：1位 */}
+        <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 20, marginTop: 20 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            おすすめのコーヒー豆 1位
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#1e3932", marginBottom: 10 }}>
+            {top1.name}
+          </div>
+          <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
+            {typeInfo.beanReasonTop1}
+          </p>
+        </div>
+
+        {/* セクション3：2位 */}
+        <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 20, marginTop: 20 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            おすすめのコーヒー豆 2位
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#1e3932", marginBottom: 10 }}>
+            {top2.name}
+          </div>
+          <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
+            {typeInfo.beanReasonTop2}
+          </p>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
+        <button
+          onClick={handleAddToProfile}
+          disabled={isAddedToProfile}
+          className={isAddedToProfile ? "profile-add-button added" : "profile-add-button"}
+        >
+          {isAddedToProfile ? "✓ プロフィールに追加済み" : "プロフィールに追加"}
+        </button>
+
+        <button onClick={() => setCurrentView("result")} className="diagnosis-close-button">
+          結果に戻る
+        </button>
+      </div>
+    </div>
+  );
+}
+
+if (currentView === "resultStored" && storedDiagnosis) {
+  return (
+    <div style={{ padding: "20px 16px 100px" }}>
+      <header className="page-header">
+        <h1 className="page-title">診断結果</h1>
+        <p className="page-subtitle">あなたにぴったりのコーヒー</p>
+      </header>
+
+      <div className="detail-card">
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>あなたのタイプ</div>
+          <h2 style={{ fontSize: 26, fontWeight: 700, color: "#1e3932", marginBottom: 12 }}>
+            {storedDiagnosis.typeName || "—"}
+          </h2>
+          <p style={{ fontSize: 16, color: "#1e3932", fontWeight: 600, marginBottom: 16 }}>
+            {storedDiagnosis.typeCatch || ""}
+          </p>
+        </div>
+
+        <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 24 }}>
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: "#1e3932", marginBottom: 16 }}>
+            おすすめの豆
+          </h3>
+
+          <div style={{ display: "grid", gap: 16 }}>
+            <div style={{ background: "#f9fafb", borderRadius: 16, padding: 16 }}>
+              <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>1位</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#1e3932" }}>
+                {storedDiagnosis.firstBeanName || "—"}
+              </div>
+            </div>
+
+            <div style={{ background: "#f9fafb", borderRadius: 16, padding: 16 }}>
+              <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>2位</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#1e3932" }}>
+                {storedDiagnosis.secondBeanName || "—"}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
+        <button
+          onClick={() => setCurrentView("detailStored")}
+          className="profile-add-button"
+          style={{ background: "white", border: "1px solid #e5e7eb", color: "#1e3932" }}
+        >
+          詳細をみる
+        </button>
+
+        <button onClick={backToMain} className="diagnosis-close-button">
+          戻る
+        </button>
+      </div>
+    </div>
+  );
+}
+
+if (currentView === "detailStored" && storedDiagnosis) {
+  return (
+    <div style={{ padding: "20px 16px 100px" }}>
+      <header className="page-header">
+        <h1 className="page-title">診断結果の詳細</h1>
+        <p className="page-subtitle">あなたに合う理由</p>
+      </header>
+
+      <div className="detail-card">
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            あなたのコーヒータイプ
+          </div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1e3932", marginBottom: 12 }}>
+            {storedDiagnosis.typeName || "—"}
+          </h2>
+          <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
+            {storedDiagnosis.typeReason || ""}
+          </p>
+        </div>
+
+        <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 20, marginTop: 20 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            おすすめのコーヒー豆 1位
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: "#1e3932" }}>
+            {storedDiagnosis.firstBeanName || "—"}
+          </div>
+        </div>
+
+        <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 20, marginTop: 20 }}>
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            おすすめのコーヒー豆 2位
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "#1e3932" }}>
+            {storedDiagnosis.secondBeanName || "—"}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
+        <button onClick={() => setCurrentView("resultStored")} className="diagnosis-close-button">
+          結果に戻る
+        </button>
+        <button onClick={backToMain} className="diagnosis-close-button">
+          戻る
+        </button>
       </div>
     </div>
   );
@@ -276,18 +518,27 @@ if (currentView === "q0") {
         </div>
 
         <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
-          <button
-            onClick={handleAddToProfile}
-            disabled={isAddedToProfile}
-            className={isAddedToProfile ? "profile-add-button added" : "profile-add-button"}
-          >
-            {isAddedToProfile ? "✓ プロフィールに追加済み" : "プロフィールに追加"}
-          </button>
+  <button
+    onClick={() => setCurrentView("detail")}
+    className="profile-add-button"
+    style={{ background: "white", border: "1px solid #e5e7eb", color: "#1e3932" }}
+  >
+    詳細をみる
+  </button>
 
-          <button onClick={backToMain} className="diagnosis-close-button">
-            診断を終了
-          </button>
-        </div>
+  <button
+    onClick={handleAddToProfile}
+    disabled={isAddedToProfile}
+    className={isAddedToProfile ? "profile-add-button added" : "profile-add-button"}
+  >
+    {isAddedToProfile ? "✓ プロフィールに追加済み" : "プロフィールに追加"}
+  </button>
+
+  <button onClick={backToMain} className="diagnosis-close-button">
+    診断を終了
+  </button>
+</div>
+
       </div>
     );
   }
@@ -296,15 +547,59 @@ if (currentView === "q0") {
   console.log("DiagnosisPage render", currentView);
 
   return (
-    <div style={{ padding: "20px 16px 100px" }}>
-      <header className="page-header">
-        <h1 className="page-title">コーヒー診断</h1>
-        <p className="page-subtitle">あなたにぴったりの一杯を見つけよう</p>
-      </header>
+  <div style={{ padding: "20px 16px 100px" }}>
+    <header className="page-header">
+      <h1 className="page-title">コーヒー診断</h1>
+      <p className="page-subtitle">あなたにぴったりの一杯を見つけよう</p>
+    </header>
 
-      <button onClick={startDiagnosis} className="diagnosis-start-button">
-        おすすめコーヒー診断開始
-      </button>
-    </div>
-  );
+    {/* ✅ 前回の診断結果カード */}
+    {storedDiagnosis?.typeName && (
+      <div
+        style={{
+          background: "white",
+          borderRadius: 20,
+          padding: 20,
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+          marginBottom: 16,
+        }}
+      >
+        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+          前回の診断結果
+        </div>
+
+        <div style={{ fontSize: 18, fontWeight: 800, color: "#1e3932", marginBottom: 8 }}>
+          {storedDiagnosis.typeName}
+        </div>
+
+        <div style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>
+          🥇 {storedDiagnosis.firstBeanName || "—"}<br />
+          🥈 {storedDiagnosis.secondBeanName || "—"}
+        </div>
+
+        <div style={{ marginTop: 14, display: "grid", gap: 10 }}>
+          <button
+            onClick={() => setCurrentView("resultStored")}
+            className="profile-add-button"
+            style={{ background: "white", border: "1px solid #e5e7eb", color: "#1e3932" }}
+          >
+            結果を見る
+          </button>
+          <button
+            onClick={() => setCurrentView("detailStored")}
+            className="profile-add-button"
+            style={{ background: "white", border: "1px solid #e5e7eb", color: "#1e3932" }}
+          >
+            詳細をみる
+          </button>
+        </div>
+      </div>
+    )}
+
+    <button onClick={startDiagnosis} className="diagnosis-start-button">
+      おすすめコーヒー診断開始
+    </button>
+  </div>
+);
+
 }

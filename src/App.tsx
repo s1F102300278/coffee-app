@@ -48,14 +48,12 @@ export default function App() {
       const stored = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
       if (stored) {
         const result = JSON.parse(stored) as StoredDiagnosis;
-        setStoredDiagnosisTypeName(result.typeName || storedDiagnosisTypeName);
+        setStoredDiagnosisTypeName(result.typeName || "未診断");
       }
     } catch {
       // 無視
     }
 
-    // プロフィールページに自動遷移
-    setActiveTab("profile");
   };
 
   // ProfilePage に渡す表示名（localStorage優先）
