@@ -1,17 +1,11 @@
 // src/pages/DiagnosisPage.tsx
 import { useMemo, useState, useEffect } from "react";
-import { COFFEE_TYPES } from "../data/types";
-import { COFFEE_BEANS } from "../data/beans";
-import {
-  computeScores,
-  createEmptyAnswers,
-  type Answers,
-} from "../logic/scoring";
-import { classifyType } from "../logic/classify";
-import { recommendTop2 } from "../logic/recommend";
 import { QuestionsPage } from "./diagnosis/QuestionsPage";
 
-type ChoiceId = "A" | "B" | "C";
+import type { RouteId } from "../data/diagnosisSpec";
+import type { DiagnosisResult, UserAnswers } from "../logic/diagnosisEngine";
+import { diagnose } from "../logic/diagnosisEngine";
+
 type DiagnosisView = "main" | "questions" | "result";
 
 const STORAGE_KEY_DIAGNOSIS = "coffee-app-diagnosis-result";
@@ -20,52 +14,56 @@ type DiagnosisPageProps = {
   onDiagnosisAddedToProfile?: () => void;
 };
 
-export function DiagnosisPage({
-  onDiagnosisAddedToProfile,
-}: DiagnosisPageProps) {
+export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps) {
   const [currentView, setCurrentView] = useState<DiagnosisView>("main");
-  const [answers, setAnswers] = useState<Answers>(() => createEmptyAnswers());
   const [hasCompletedDiagnosis, setHasCompletedDiagnosis] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
 
-  const scores = useMemo(() => computeScores(answers), [answers]);
-  const typeId = useMemo(
-    () => classifyType(answers, scores),
-    [answers, scores]
-  );
+  // ✅ 新エンジン用の回答形式（質問ID -> 選択肢 index 0-3）
+  const [answers, setAnswers] = useState<UserAnswers>({});
 
-  const typeInfo = useMemo(() => {
-    return COFFEE_TYPES.find((t) => t.id === typeId) ?? COFFEE_TYPES[0];
-  }, [typeId]);
+  // ✅ いまは暫定で routeA 固定（後でQ0を追加して分岐させる）
+  const route: RouteId = "routeA";
 
-  const top2 = useMemo(() => recommendTop2(scores, COFFEE_BEANS), [scores]);
+  // ✅ 新エンジンの結果を一発で作る
+  const diagnosisResult: DiagnosisResult | null = useMemo(() => {
+    try {
+      // まだ回答が少ない段階では結果を出さない（任意）
+      // 例：20問すべて回答後にだけ表示したいなら条件を変えてOK
+      return diagnose(answers, route);
+    } catch {
+      return null;
+    }
+  }, [answers, route]);
+
+  const typeInfo = diagnosisResult?.typeSpec;
+  const top1 = diagnosisResult?.top1Bean;
+  const top2 = diagnosisResult?.top2Bean;
 
   // 診断結果をlocalStorageに保存
   useEffect(() => {
-    if (hasCompletedDiagnosis && currentView === "result") {
+    if (hasCompletedDiagnosis && currentView === "result" && diagnosisResult) {
       try {
-        const diagnosisResult = {
-          typeId,
-          typeName: typeInfo.name,
-          typeCatch: typeInfo.catch,
-          typeReason: typeInfo.reason,
-          firstBeanName: top2?.first.name || "",
-          secondBeanName: top2?.second.name || "",
+        const stored = {
+          typeId: diagnosisResult.decidedType,
+          typeName: typeInfo?.displayName ?? "",
+          typeCatch: typeInfo?.descriptionShort ?? "",
+          typeReason: typeInfo?.descriptionLong ?? "",
+          firstBeanName: top1?.name ?? "",
+          secondBeanName: top2?.name ?? "",
           timestamp: new Date().toISOString(),
           addedToProfile: false,
         };
-        localStorage.setItem(
-          STORAGE_KEY_DIAGNOSIS,
-          JSON.stringify(diagnosisResult)
-        );
+        localStorage.setItem(STORAGE_KEY_DIAGNOSIS, JSON.stringify(stored));
       } catch (err) {
         console.error("Failed to save diagnosis result:", err);
       }
     }
-  }, [hasCompletedDiagnosis, currentView, typeId, typeInfo, top2]);
+  }, [hasCompletedDiagnosis, currentView, diagnosisResult, typeInfo, top1, top2]);
 
-  function setAnswer(qid: keyof Answers, choice: ChoiceId) {
-    setAnswers((prev) => ({ ...prev, [qid]: choice }));
+  // ✅ QuestionsPage からは（qid, choiceIndex）で受け取りたい
+  function setAnswer(questionId: string, choiceIndex: number) {
+    setAnswers((prev) => ({ ...prev, [questionId]: choiceIndex }));
   }
 
   function startDiagnosis() {
@@ -89,7 +87,6 @@ export function DiagnosisPage({
         const result = JSON.parse(stored);
         result.addedToProfile = true;
         localStorage.setItem(STORAGE_KEY_DIAGNOSIS, JSON.stringify(result));
-
         setIsAddedToProfile(true);
         onDiagnosisAddedToProfile?.();
       }
@@ -102,16 +99,18 @@ export function DiagnosisPage({
   if (currentView === "questions") {
     return (
       <QuestionsPage
-        answers={answers}
-        onAnswerChange={setAnswer}
-        onViewResult={viewResult}
-        onBack={backToMain}
-      />
+  route={route}
+  answers={answers}
+  onAnswerChange={setAnswer}
+  onViewResult={viewResult}
+  onBack={backToMain}
+/>
+
     );
   }
 
   // 結果画面表示中
-  if (currentView === "result" && top2) {
+  if (currentView === "result" && diagnosisResult && typeInfo && top1 && top2) {
     return (
       <div style={{ padding: "20px 16px 100px" }}>
         <header className="page-header">
@@ -132,7 +131,7 @@ export function DiagnosisPage({
                 marginBottom: 12,
               }}
             >
-              {typeInfo.name}
+              {typeInfo.displayName}
             </h2>
             <p
               style={{
@@ -142,10 +141,10 @@ export function DiagnosisPage({
                 marginBottom: 16,
               }}
             >
-              {typeInfo.catch}
+              {typeInfo.descriptionShort}
             </p>
             <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.6 }}>
-              {typeInfo.reason}
+              {typeInfo.descriptionLong}
             </p>
           </div>
 
@@ -169,9 +168,7 @@ export function DiagnosisPage({
                   padding: 16,
                 }}
               >
-                <div
-                  style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}
-                >
+                <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>
                   1位
                 </div>
                 <div
@@ -182,11 +179,8 @@ export function DiagnosisPage({
                     marginBottom: 8,
                   }}
                 >
-                  {top2.first.name}
+                  {top1.name}
                 </div>
-                <p style={{ fontSize: 14, color: "#6b7280" }}>
-                  {top2.first.note}
-                </p>
               </div>
 
               <div
@@ -196,9 +190,7 @@ export function DiagnosisPage({
                   padding: 16,
                 }}
               >
-                <div
-                  style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}
-                >
+                <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>
                   2位
                 </div>
                 <div
@@ -209,30 +201,22 @@ export function DiagnosisPage({
                     marginBottom: 8,
                   }}
                 >
-                  {top2.second.name}
+                  {top2.name}
                 </div>
-                <p style={{ fontSize: 14, color: "#6b7280" }}>
-                  {top2.second.note}
-                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* アクションボタン */}
         <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
-          {/* プロフィールに追加ボタン */}
           <button
             onClick={handleAddToProfile}
             disabled={isAddedToProfile}
-            className={
-              isAddedToProfile ? "profile-add-button added" : "profile-add-button"
-            }
+            className={isAddedToProfile ? "profile-add-button added" : "profile-add-button"}
           >
             {isAddedToProfile ? "✓ プロフィールに追加済み" : "プロフィールに追加"}
           </button>
 
-          {/* 診断終了ボタン */}
           <button onClick={backToMain} className="diagnosis-close-button">
             診断を終了
           </button>
@@ -242,6 +226,8 @@ export function DiagnosisPage({
   }
 
   // メイン画面（診断トップ）
+  console.log("DiagnosisPage render", currentView);
+
   return (
     <div style={{ padding: "20px 16px 100px" }}>
       <header className="page-header">
@@ -249,42 +235,9 @@ export function DiagnosisPage({
         <p className="page-subtitle">あなたにぴったりの一杯を見つけよう</p>
       </header>
 
-      {/* 診断開始ボタン */}
       <button onClick={startDiagnosis} className="diagnosis-start-button">
         おすすめコーヒー診断開始
       </button>
-
-      {/* 診断結果カード（診断済みの場合のみ表示） */}
-      {hasCompletedDiagnosis && (
-        <div style={{ marginTop: 24 }}>
-          <h2 className="section-title">前回の診断結果</h2>
-          <div
-            style={{
-              background: "white",
-              borderRadius: 20,
-              padding: 20,
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
-            }}
-          >
-            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
-              あなたのタイプ
-            </div>
-            <div
-              style={{
-                fontSize: 20,
-                fontWeight: 700,
-                color: "#1e3932",
-                marginBottom: 8,
-              }}
-            >
-              {typeInfo.name}
-            </div>
-            <p style={{ fontSize: 14, color: "#6b7280" }}>
-              {typeInfo.catch}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

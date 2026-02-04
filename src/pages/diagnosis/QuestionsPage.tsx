@@ -1,43 +1,39 @@
 // src/pages/diagnosis/QuestionsPage.tsx
 import { useMemo } from "react";
-import { QUESTIONS } from "../../data/questions";
-import { FiveStepMeter } from "../../components/FiveStepMeter";
-import type { Answers } from "../../logic/scoring";
-import { computeScores } from "../../logic/scoring";
-
-type ChoiceId = "A" | "B" | "C";
+import type { RouteId } from "../../data/diagnosisSpec";
+import {
+  ROUTE_A_QUESTIONS,
+  ROUTE_B_QUESTIONS,
+} from "../../data/diagnosisSpec";
 
 type QuestionsPageProps = {
-  answers: Answers;
-  onAnswerChange: (qid: keyof Answers, choice: ChoiceId) => void;
+  route: RouteId;
+  answers: Record<string, number>; // UserAnswers と同形
+  onAnswerChange: (questionId: string, choiceIndex: number) => void;
   onViewResult: () => void;
   onBack: () => void;
 };
 
-function labelForAxis(axis: "roast" | "acidity" | "body") {
-  if (axis === "roast")
-    return { left: "LIGHT", right: "DARK", name: "ロースト" };
-  if (axis === "acidity")
-    return { left: "LOW", right: "HIGH", name: "酸味" };
-  return { left: "LIGHT", right: "FULL", name: "コク" };
-}
+const CHOICE_LABELS = ["A", "B", "C", "D"] as const;
 
 export function QuestionsPage({
+  route,
   answers,
   onAnswerChange,
   onViewResult,
   onBack,
 }: QuestionsPageProps) {
-  const progressText = useMemo(() => {
-    const answered = Object.values(answers).filter((v) => v != null).length;
-    return `${answered}/${QUESTIONS.length}`;
-  }, [answers]);
+  const questions = route === "routeA" ? ROUTE_A_QUESTIONS : ROUTE_B_QUESTIONS;
+
+  const answeredCount = useMemo(() => {
+    return questions.filter((q) => answers[q.id] !== undefined).length;
+  }, [questions, answers]);
+
+  const progressText = `${answeredCount}/${questions.length}`;
 
   const allAnswered = useMemo(() => {
-    return Object.values(answers).every((v) => v != null);
-  }, [answers]);
-
-  const scores = useMemo(() => computeScores(answers), [answers]);
+    return questions.every((q) => answers[q.id] !== undefined);
+  }, [questions, answers]);
 
   return (
     <div style={{ padding: "20px 16px 100px" }}>
@@ -51,17 +47,18 @@ export function QuestionsPage({
       <header style={{ marginBottom: 24 }}>
         <h1 className="page-title">コーヒー診断</h1>
         <p className="page-subtitle">
-          6つの質問に答えてください（進捗: {progressText}）
+          質問に答えてください（進捗: {progressText}）
         </p>
       </header>
 
       {/* 全質問を一覧表示 */}
       <div style={{ display: "grid", gap: 16 }}>
-        {QUESTIONS.map((q, qi) => (
+        {questions.map((q, qi) => (
           <div key={q.id} className="question-card">
             <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 8 }}>
-              質問 {qi + 1}/{QUESTIONS.length}
+              質問 {qi + 1}/{questions.length}
             </div>
+
             <div
               style={{
                 fontSize: 18,
@@ -70,24 +67,24 @@ export function QuestionsPage({
                 marginBottom: 16,
               }}
             >
-              {q.prompt}
+              {q.q}
             </div>
 
             <div style={{ display: "grid", gap: 10 }}>
-              {q.choices.map((c) => {
-                const selected = answers[q.id] === c.id;
+              {q.options.map((opt, idx) => {
+                const selected = answers[q.id] === idx;
                 return (
                   <button
-                    key={c.id}
-                    onClick={() => onAnswerChange(q.id, c.id)}
+                    key={`${q.id}-${idx}`}
+                    onClick={() => onAnswerChange(q.id, idx)}
                     className={
                       selected ? "choice-button selected" : "choice-button"
                     }
                   >
                     <span style={{ fontWeight: 700, marginRight: 8 }}>
-                      {c.id}
+                      {CHOICE_LABELS[idx] ?? ""}
                     </span>
-                    <span>{c.text}</span>
+                    <span>{opt.t}</span>
                   </button>
                 );
               })}
@@ -116,43 +113,6 @@ export function QuestionsPage({
           >
             結果を見る
           </button>
-        </div>
-      )}
-
-      {/* 味わいの傾向表示（回答済みなら） */}
-      {allAnswered && (
-        <div style={{ marginTop: 32 }}>
-          <div
-            style={{
-              background: "white",
-              borderRadius: 20,
-              padding: 24,
-              boxShadow: "0 2px 12px rgba(0, 0, 0, 0.08)",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: 18,
-                fontWeight: 700,
-                marginBottom: 16,
-                color: "#1e3932",
-              }}
-            >
-              あなたの味わいの傾向
-            </h3>
-            {(["roast", "acidity", "body"] as const).map((axis) => {
-              const meta = labelForAxis(axis);
-              return (
-                <FiveStepMeter
-                  key={axis}
-                  label={meta.name}
-                  left={meta.left}
-                  right={meta.right}
-                  value={scores[axis]}
-                />
-              );
-            })}
-          </div>
         </div>
       )}
     </div>
