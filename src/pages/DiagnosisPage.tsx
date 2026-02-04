@@ -3,10 +3,13 @@ import { useMemo, useState, useEffect } from "react";
 import { QuestionsPage } from "./diagnosis/QuestionsPage";
 
 import type { RouteId } from "../data/diagnosisSpec";
-import type { DiagnosisResult, UserAnswers } from "../logic/diagnosisEngine";
+import { Q0_SPEC, determineRoute } from "../data/diagnosisSpec";
+
+import type {UserAnswers } from "../logic/diagnosisEngine";
 import { diagnose } from "../logic/diagnosisEngine";
 
-type DiagnosisView = "main" | "questions" | "result";
+
+type DiagnosisView = "main" | "q0" | "questions" | "result";
 
 const STORAGE_KEY_DIAGNOSIS = "coffee-app-diagnosis-result";
 
@@ -19,22 +22,28 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
   const [hasCompletedDiagnosis, setHasCompletedDiagnosis] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
 
+  
+
   // ✅ 新エンジン用の回答形式（質問ID -> 選択肢 index 0-3）
   const [answers, setAnswers] = useState<UserAnswers>({});
 
-  // ✅ いまは暫定で routeA 固定（後でQ0を追加して分岐させる）
-  const route: RouteId = "routeA";
+  const [q0Index, setQ0Index] = useState<number | null>(null);
+
+  // q0Index からルートを決定（Q0未回答の間は routeA 仮）
+  const route: RouteId = useMemo(() => {
+    return determineRoute(q0Index ?? 0);
+  }, [q0Index]);
 
   // ✅ 新エンジンの結果を一発で作る
-  const diagnosisResult: DiagnosisResult | null = useMemo(() => {
-    try {
-      // まだ回答が少ない段階では結果を出さない（任意）
-      // 例：20問すべて回答後にだけ表示したいなら条件を変えてOK
-      return diagnose(answers, route);
-    } catch {
-      return null;
-    }
-  }, [answers, route]);
+  const diagnosisResult = useMemo(() => {
+  if (q0Index === null) return null;
+  try {
+    return diagnose(answers, route);
+  } catch {
+    return null;
+  }
+}, [answers, route, q0Index]);
+
 
   const typeInfo = diagnosisResult?.typeSpec;
   const top1 = diagnosisResult?.top1Bean;
@@ -67,8 +76,9 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
   }
 
   function startDiagnosis() {
-    setCurrentView("questions");
-  }
+  setCurrentView("q0");
+}
+
 
   function viewResult() {
     setHasCompletedDiagnosis(true);
@@ -76,9 +86,18 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
   }
 
   function backToMain() {
-    setCurrentView("main");
-    setIsAddedToProfile(false);
-  }
+  setCurrentView("main");
+  setIsAddedToProfile(false);
+  setQ0Index(null);
+  setAnswers({});
+}
+
+
+  function submitQ0(index: number) {
+  setQ0Index(index);
+  setCurrentView("questions");
+}
+
 
   function handleAddToProfile() {
     try {
@@ -108,6 +127,54 @@ export function DiagnosisPage({ onDiagnosisAddedToProfile }: DiagnosisPageProps)
 
     );
   }
+
+  // Q0（頻度質問）画面
+if (currentView === "q0") {
+  return (
+    <div style={{ padding: "20px 16px 100px" }}>
+      <div style={{ marginBottom: 20 }}>
+        <button onClick={backToMain} className="back-button">
+          <span style={{ fontSize: 18 }}>←</span>
+          <span>戻る</span>
+        </button>
+      </div>
+
+      <header style={{ marginBottom: 24 }}>
+        <h1 className="page-title">コーヒー診断</h1>
+        <p className="page-subtitle">まずは普段のことを教えてください</p>
+      </header>
+
+      <div className="question-card">
+        <div
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            color: "#1e3932",
+            marginBottom: 16,
+          }}
+        >
+          {Q0_SPEC.question}
+        </div>
+
+        <div style={{ display: "grid", gap: 10 }}>
+          {Q0_SPEC.options.map((text, idx) => {
+            const selected = q0Index === idx;
+            return (
+              <button
+                key={idx}
+                onClick={() => submitQ0(idx)}
+                className={selected ? "choice-button selected" : "choice-button"}
+              >
+                <span>{text}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
   // 結果画面表示中
   if (currentView === "result" && diagnosisResult && typeInfo && top1 && top2) {
