@@ -18,12 +18,18 @@ type StoredDiagnosis = {
   timestamp?: string;
 };
 
+type DiagnosisStartView = "main" | "resultStored" | "detailStored";
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  const [diagnosisStartView, setDiagnosisStartView] =
+    useState<DiagnosisStartView>("main");
 
   // ProfilePage で使う状態
-  const [diagnosisAddedToProfile, setDiagnosisAddedToProfile] = useState(false);
-  const [storedDiagnosisTypeName, setStoredDiagnosisTypeName] = useState<string>("未診断");
+  const [diagnosisAddedToProfile, setDiagnosisAddedToProfile] =
+    useState(false);
+  const [storedDiagnosisTypeName, setStoredDiagnosisTypeName] =
+    useState<string>("未診断");
 
   // 初回マウント時にlocalStorageから診断結果を読み込む
   useEffect(() => {
@@ -43,7 +49,6 @@ export default function App() {
   const handleDiagnosisAddedToProfile = () => {
     setDiagnosisAddedToProfile(true);
 
-    // 追加直後のlocalStorageを読み直してタイプ名も最新化
     try {
       const stored = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
       if (stored) {
@@ -53,13 +58,24 @@ export default function App() {
     } catch {
       // 無視
     }
-
   };
 
   // ProfilePage に渡す表示名（localStorage優先）
   const diagnosisTypeName = useMemo(() => {
     return storedDiagnosisTypeName;
   }, [storedDiagnosisTypeName]);
+
+  // ★診断ページから抜ける処理
+  const handleDiagnosisExit = () => {
+    // プロフィール起点の場合はプロフィールに戻る
+    if (diagnosisStartView === "detailStored" || diagnosisStartView === "resultStored") {
+      setActiveTab("profile");
+      setDiagnosisStartView("main"); // リセット
+    } else {
+      // 通常の診断起点の場合はそのまま（mainに戻る）
+      setDiagnosisStartView("main");
+    }
+  };
 
   function renderPage() {
     switch (activeTab) {
@@ -69,14 +85,27 @@ export default function App() {
       case "profile":
         return (
           <ProfilePage
-            onNavigateToDiagnosis={() => setActiveTab("diagnosis")}
+            onNavigateToDiagnosis={() => {
+              if (diagnosisAddedToProfile) {
+                setDiagnosisStartView("detailStored"); // ★詳細を即表示
+              } else {
+                setDiagnosisStartView("main"); // 未診断なら通常開始
+              }
+              setActiveTab("diagnosis");
+            }}
             hasCompletedDiagnosis={diagnosisAddedToProfile}
             diagnosisTypeName={diagnosisTypeName}
           />
         );
 
       case "diagnosis":
-        return <DiagnosisPage onDiagnosisAddedToProfile={handleDiagnosisAddedToProfile} />;
+        return (
+          <DiagnosisPage
+            onDiagnosisAddedToProfile={handleDiagnosisAddedToProfile}
+            startView={diagnosisStartView}
+            onExit={handleDiagnosisExit} // ★追加
+          />
+        );
 
       case "collection":
         return <CollectionPage />;
@@ -92,7 +121,14 @@ export default function App() {
   return (
     <div className="app-container">
       <main className="page-content">{renderPage()}</main>
-      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+      <TabBar
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          // タブで診断を開いた場合は通常開始に戻す
+          if (tab === "diagnosis") setDiagnosisStartView("main");
+          setActiveTab(tab);
+        }}
+      />
     </div>
   );
 }
