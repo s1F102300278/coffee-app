@@ -8,14 +8,14 @@ import { Q0_SPEC, determineRoute } from "../data/diagnosisSpec";
 import type { UserAnswers } from "../logic/diagnosisEngine";
 import { diagnose } from "../logic/diagnosisEngine";
 
-import { BeanCard } from "../components/BeanCard"; // ←パスが違うならここだけ直してください
+import { BeanCard } from "../components/BeanCard";
 
 type DiagnosisStartView = "main" | "resultStored" | "detailStored";
 
 type DiagnosisPageProps = {
   onDiagnosisAddedToProfile?: () => void;
   startView?: DiagnosisStartView;
-  onExit?: () => void; // プロフィール起点で「戻る」を押したとき Profile に戻す
+  onExit?: () => void;
 };
 
 type DiagnosisView =
@@ -49,31 +49,25 @@ export function DiagnosisPage({
 }: DiagnosisPageProps) {
   const [currentView, setCurrentView] = useState<DiagnosisView>("main");
 
-  // 新エンジン用回答形式（質問ID -> 選択肢 index）
   const [answers, setAnswers] = useState<UserAnswers>({});
   const [q0Index, setQ0Index] = useState<number | null>(null);
 
   const [hasCompletedDiagnosis, setHasCompletedDiagnosis] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
 
-  // 保存済み結果
   const [storedDiagnosis, setStoredDiagnosis] = useState<StoredDiagnosis | null>(
     null
   );
 
-  // 豆詳細
   const [selectedBeanName, setSelectedBeanName] = useState<string | null>(null);
   const [beanBackView, setBeanBackView] = useState<DiagnosisView>("detail");
 
-  // ✅ startViewの適用が「戻る」を壊す最大原因なので、必ず1回だけ適用する
   const didApplyStartViewRef = useRef(false);
 
-  // q0Index からルート決定（Q0未回答時は暫定 routeA）
   const route: RouteId = useMemo(() => {
     return determineRoute(q0Index ?? 0);
   }, [q0Index]);
 
-  // 診断結果（診断中のみ）
   const diagnosisResult = useMemo(() => {
     if (q0Index === null) return null;
     try {
@@ -87,7 +81,6 @@ export function DiagnosisPage({
   const top1 = diagnosisResult?.top1Bean;
   const top2 = diagnosisResult?.top2Bean;
 
-  // 保存済み結果を読む関数（共通化）
   function loadStoredDiagnosis() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
@@ -102,7 +95,6 @@ export function DiagnosisPage({
     }
   }
 
-  // 初回 & 保存済みビューに入る時に読み込む（落ちないように）
   useEffect(() => {
     loadStoredDiagnosis();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,7 +107,6 @@ export function DiagnosisPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView]);
 
-  // ✅ startViewは「最初の1回だけ」反映する（これが戻る不具合の根本対策）
   useEffect(() => {
     if (!startView) return;
     if (didApplyStartViewRef.current) return;
@@ -124,7 +115,6 @@ export function DiagnosisPage({
     didApplyStartViewRef.current = true;
   }, [startView]);
 
-  // 診断結果をlocalStorageに保存（診断完了→result表示の時）
   useEffect(() => {
     if (hasCompletedDiagnosis && currentView === "result" && diagnosisResult) {
       try {
@@ -139,7 +129,6 @@ export function DiagnosisPage({
           addedToProfile: false,
         };
         localStorage.setItem(STORAGE_KEY_DIAGNOSIS, JSON.stringify(stored));
-        // 保存したら state も更新
         setStoredDiagnosis(stored);
       } catch (err) {
         console.error("Failed to save diagnosis result:", err);
@@ -147,13 +136,12 @@ export function DiagnosisPage({
     }
   }, [hasCompletedDiagnosis, currentView, diagnosisResult, typeInfo, top1, top2]);
 
-  // ✅ QuestionsPage から (qid, choiceIndex) で受け取る
   function setAnswer(questionId: string, choiceIndex: number) {
     setAnswers((prev) => ({ ...prev, [questionId]: choiceIndex }));
   }
 
   function startDiagnosis() {
-    didApplyStartViewRef.current = true; // startView上書き停止
+    didApplyStartViewRef.current = true;
     setHasCompletedDiagnosis(false);
     setIsAddedToProfile(false);
     setAnswers({});
@@ -183,7 +171,6 @@ export function DiagnosisPage({
     setSelectedBeanName(null);
   }
 
-  // ✅ 保存済み(resultStored/detailStored)の「戻る」：プロフィール起点なら profileへ、そうでなければ診断トップへ
   function backFromStored() {
     didApplyStartViewRef.current = true;
     setSelectedBeanName(null);
@@ -192,11 +179,9 @@ export function DiagnosisPage({
       onExit();
       return;
     }
-    // 診断トップの「診断結果を見る」起点
     setCurrentView("main");
   }
 
-  // プロフィール追加（保存のみ、ページ遷移しない）
   function handleAddToProfile() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY_DIAGNOSIS);
@@ -208,7 +193,6 @@ export function DiagnosisPage({
       setIsAddedToProfile(true);
       setStoredDiagnosis(result);
 
-      // プロフィール用リストへも保存
       const profileRaw = localStorage.getItem(STORAGE_KEY_PROFILE);
       const list = profileRaw ? JSON.parse(profileRaw) : [];
       list.unshift({
@@ -227,7 +211,6 @@ export function DiagnosisPage({
     }
   }
 
-  // 豆詳細へ
   function openBeanDetail(beanName: string, fromView: DiagnosisView) {
     didApplyStartViewRef.current = true;
     setSelectedBeanName(beanName);
@@ -239,6 +222,20 @@ export function DiagnosisPage({
     didApplyStartViewRef.current = true;
     setSelectedBeanName(null);
     setCurrentView(beanBackView);
+  }
+
+  // 日付フォーマット関数
+  function formatDate(isoString?: string): string {
+    if (!isoString) return "";
+    try {
+      const date = new Date(isoString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}/${month}/${day}`;
+    } catch {
+      return "";
+    }
   }
 
   // -------------------------
@@ -756,34 +753,96 @@ export function DiagnosisPage({
         <p className="page-subtitle">あなたにぴったりの一杯を見つけよう</p>
       </header>
 
+      {/* 前回の診断結果カード */}
+      {storedDiagnosis?.typeName && (
+        <div
+          onClick={() => {
+            didApplyStartViewRef.current = true;
+            setCurrentView("detailStored");
+          }}
+          style={{
+            background: "white",
+            borderRadius: 20,
+            padding: 20,
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+            marginBottom: 16,
+            cursor: "pointer",
+            transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.12)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+            前回の診断結果
+          </div>
+
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 800,
+              color: "#1e3932",
+              marginBottom: 8,
+            }}
+          >
+            {storedDiagnosis.typeName}
+          </div>
+
+          {storedDiagnosis.typeCatch && (
+            <div
+              style={{
+                fontSize: 13,
+                color: "#6b7280",
+                marginBottom: 12,
+                lineHeight: 1.5,
+              }}
+            >
+              {storedDiagnosis.typeCatch}
+            </div>
+          )}
+
+          <div style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>
+            {storedDiagnosis.firstBeanName && (
+              <div>🥇 {storedDiagnosis.firstBeanName}</div>
+            )}
+            {storedDiagnosis.secondBeanName && (
+              <div>🥈 {storedDiagnosis.secondBeanName}</div>
+            )}
+          </div>
+
+          {storedDiagnosis.timestamp && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "#9ca3af",
+                marginTop: 12,
+              }}
+            >
+              診断日: {formatDate(storedDiagnosis.timestamp)}
+            </div>
+          )}
+
+          <div
+            style={{
+              fontSize: 13,
+              color: "#00754a",
+              marginTop: 12,
+              fontWeight: 600,
+            }}
+          >
+            タップして詳細を見る →
+          </div>
+        </div>
+      )}
+
       <button onClick={startDiagnosis} className="diagnosis-start-button">
         おすすめコーヒー診断開始
       </button>
-
-      {/* 保存済みの結果があれば表示（診断トップから結果を見る導線） */}
-      {storedDiagnosis?.typeName && (
-        <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
-          <button
-            onClick={() => {
-              didApplyStartViewRef.current = true;
-              setCurrentView("resultStored");
-            }}
-            className="profile-add-button"
-          >
-            診断結果を見る
-          </button>
-
-          <button
-            onClick={() => {
-              didApplyStartViewRef.current = true;
-              setCurrentView("detailStored");
-            }}
-            className="profile-add-button"
-          >
-            診断結果の詳細を見る
-          </button>
-        </div>
-      )}
     </div>
   );
 }
