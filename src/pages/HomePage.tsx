@@ -1,6 +1,8 @@
 // src/pages/HomePage.tsx
 import { useState } from "react";
 import { HOME_BEANS } from "../data/homeBeans";
+import { BeanDetailPage } from "./BeanDetailPage";
+import { beanPhotoSrc } from "../utils/assets";
 
 export function HomePage() {
   const [selectedBeanId, setSelectedBeanId] = useState<string | null>(null);
@@ -10,42 +12,9 @@ export function HomePage() {
     setSelectedBeanId(null);
   }
 
-  // 詳細表示中の豆を取得
-  const selectedBean = HOME_BEANS.find((b) => b.id === selectedBeanId);
-
-  // 詳細画面が開いている場合
-  if (selectedBean) {
-    return (
-      <div style={{ padding: "20px 16px 100px" }}>
-        {/* 左上に戻るボタン */}
-        <button onClick={closeDetail} className="back-button">
-          <span style={{ fontSize: 18 }}>←</span>
-          <span>戻る</span>
-        </button>
-
-        <div className="detail-card" style={{ marginTop: 20 }}>
-          <div
-            className="detail-image"
-            style={{
-              background: selectedBean.imageColor,
-            }}
-          />
-          <h2
-            style={{
-              fontSize: 24,
-              fontWeight: 700,
-              color: "#1e3932",
-              marginBottom: 12,
-            }}
-          >
-            {selectedBean.name}
-          </h2>
-          <p style={{ fontSize: 15, color: "#6b7280" }}>
-            ※ 詳細ページは後で実装します
-          </p>
-        </div>
-      </div>
-    );
+  // ★★★ 豆詳細ページを表示 ★★★
+  if (selectedBeanId) {
+    return <BeanDetailPage beanId={selectedBeanId} onBack={closeDetail} />;
   }
 
   // 通常のホーム画面（コア豆のみ）
@@ -65,14 +34,61 @@ export function HomePage() {
               key={bean.id}
               onClick={() => setSelectedBeanId(bean.id)}
               className="bean-card"
+              style={{
+                cursor: "pointer",
+                transition: "transform 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.12)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+              }}
             >
+              {/* 豆の画像 */}
               <div
-                className="bean-image"
                 style={{
-                  background: bean.imageColor,
+                  width: "100%",
+                  height: 140,
+                  background: "#f0f0f0",
+                  borderRadius: "12px 12px 0 0",
+                  overflow: "hidden",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 16,
                 }}
-              />
-              <div className="bean-name">{bean.name}</div>
+              >
+                <img
+                  src={beanPhotoSrc(bean.photoFile)}
+                  alt={bean.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                  onError={(e) => {
+                    // 画像読み込み失敗時は背景色のみ表示
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+
+              {/* 豆の名前 */}
+              <div
+                style={{
+                  padding: "12px 8px",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#1e3932",
+                  textAlign: "center",
+                  lineHeight: 1.4,
+                }}
+              >
+                {bean.name}
+              </div>
             </div>
           ))}
         </div>

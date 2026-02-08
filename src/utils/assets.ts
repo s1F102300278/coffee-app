@@ -1,8 +1,18 @@
 // src/utils/assets.ts
+// 画像パスのヘルパー関数
 
-// public 配下の画像を参照するための関数
-export const beanPhotoSrc = (fileName: string) =>
-  `/Whole-Bean-photo/${fileName}`;
+/**
+ * 豆の写真パスを返す
+ * @param filename - 例: "Pike-Place-Roast.jpg"
+ */
+export function beanPhotoSrc(filename: string): string {
+  return `/Whole-Bean-photo/${filename}`;
+}
 
-export const beanLogoSrc = (fileName: string) =>
-  `/Whole-Bean-logo/${fileName}`;
+/**
+ * 豆のロゴパスを返す
+ * @param filename - 例: "Pike-Place-Roast.jpg"
+ */
+export function beanLogoSrc(filename: string): string {
+  return `/Whole-Bean-logo/${filename}`;
+}

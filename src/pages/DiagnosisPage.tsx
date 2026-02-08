@@ -1,6 +1,7 @@
 // src/pages/DiagnosisPage.tsx
 import { useMemo, useState, useEffect, useRef } from "react";
 import { QuestionsPage } from "./diagnosis/QuestionsPage";
+import { BeanDetailPage } from "./BeanDetailPage";
 
 import type { RouteId } from "../data/diagnosisSpec";
 import { Q0_SPEC, determineRoute } from "../data/diagnosisSpec";
@@ -9,6 +10,7 @@ import type { UserAnswers } from "../logic/diagnosisEngine";
 import { diagnose } from "../logic/diagnosisEngine";
 
 import { BeanCard } from "../components/BeanCard";
+import { COFFEE_BEANS } from "../data/beans";
 
 type DiagnosisStartView = "main" | "resultStored" | "detailStored";
 
@@ -80,6 +82,12 @@ export function DiagnosisPage({
   const typeInfo = diagnosisResult?.typeSpec;
   const top1 = diagnosisResult?.top1Bean;
   const top2 = diagnosisResult?.top2Bean;
+
+  // ★★★ 追加：豆名からIDを検索する関数 ★★★
+  function getBeanIdByName(beanName: string): string | null {
+    const bean = COFFEE_BEANS.find((b) => b.name === beanName);
+    return bean?.id || null;
+  }
 
   function loadStoredDiagnosis() {
     try {
@@ -714,33 +722,30 @@ export function DiagnosisPage({
   }
 
   // -------------------------
-  // 画面：beanDetail
+  // 画面：beanDetail ★★★ BeanDetailPageコンポーネントを使用 ★★★
   // -------------------------
-  if (currentView === "beanDetail") {
-    return (
-      <div style={{ padding: "20px 16px 100px" }}>
-        <div style={{ marginBottom: 20 }}>
-          <button onClick={closeBeanDetail} className="back-button">
-            <span style={{ fontSize: 18 }}>←</span>
-            <span>戻る</span>
-          </button>
+  if (currentView === "beanDetail" && selectedBeanName) {
+    const beanId = getBeanIdByName(selectedBeanName);
+    
+    if (!beanId) {
+      return (
+        <div style={{ padding: "20px 16px 100px" }}>
+          <div style={{ marginBottom: 20 }}>
+            <button onClick={closeBeanDetail} className="back-button">
+              <span style={{ fontSize: 18 }}>←</span>
+              <span>戻る</span>
+            </button>
+          </div>
+          <div className="detail-card">
+            <p style={{ fontSize: 16, color: "#6b7280" }}>
+              豆の情報が見つかりません
+            </p>
+          </div>
         </div>
+      );
+    }
 
-        <header className="page-header">
-          <h1 className="page-title">豆の詳細</h1>
-          <p className="page-subtitle">後から内容を追加できます</p>
-        </header>
-
-        <div className="detail-card">
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: "#1e3932" }}>
-            {selectedBeanName || "—"}
-          </h2>
-          <p style={{ fontSize: 14, color: "#6b7280", marginTop: 12, lineHeight: 1.7 }}>
-            ※ここに豆の説明（香り、味わい、相性フードなど）を今後追加できます。
-          </p>
-        </div>
-      </div>
-    );
+    return <BeanDetailPage beanId={beanId} onBack={closeBeanDetail} />;
   }
 
   // -------------------------

@@ -27,10 +27,9 @@ export function CollectionPage() {
     (beanId: string, type: "enjoy" | "buy", amount: number) => {
       const key = `${beanId}-${type}`;
       longPressTimerRef.current[key] = setTimeout(() => {
-        // 長押し：ポイント減算
         removePoints(beanId, amount);
         showFeedback(beanId, type, "remove");
-      }, 1200); // 1.2秒
+      }, 1200);
     },
     [removePoints, showFeedback]
   );
@@ -44,7 +43,6 @@ export function CollectionPage() {
         clearTimeout(timer);
         delete longPressTimerRef.current[key];
 
-        // 通常タップ：ポイント加算
         addPoints(beanId, amount);
         showFeedback(beanId, type, "add");
       }
@@ -72,8 +70,7 @@ export function CollectionPage() {
       <div className="bean-grid">
         {HOME_BEANS.map((bean) => {
           const currentPoints = getPoints(bean.id);
-          const isFeedbackActive =
-            feedback?.beanId === bean.id;
+          const isFeedbackActive = feedback?.beanId === bean.id;
           const feedbackAmount =
             feedback?.type === "enjoy" ? 1 : feedback?.type === "buy" ? 10 : 0;
           const feedbackSign = feedback?.action === "add" ? "+" : "−";
@@ -101,12 +98,10 @@ export function CollectionPage() {
                   {bean.name}
                 </div>
 
-                {/* バッジ */}
                 <div style={{ marginBottom: 8 }}>
                   <BeanBadge points={currentPoints} />
                 </div>
 
-                {/* 現在のポイント */}
                 <div style={{ fontSize: 12, color: "#6b7280" }}>
                   {currentPoints} pt
                 </div>
@@ -149,7 +144,6 @@ export function CollectionPage() {
                   <span style={{ fontSize: 12, fontWeight: 700 }}>+10pt</span>
                 </button>
 
-                {/* フィードバック表示 */}
                 {isFeedbackActive && (
                   <div className={`point-feedback ${feedback.action}`}>
                     {feedbackSign}
