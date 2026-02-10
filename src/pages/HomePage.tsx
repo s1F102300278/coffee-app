@@ -33,8 +33,11 @@ export function HomePage() {
             <div
               key={bean.id}
               onClick={() => setSelectedBeanId(bean.id)}
-              className="bean-card"
               style={{
+                background: "white",
+                borderRadius: 16,
+                overflow: "hidden",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                 cursor: "pointer",
                 transition: "transform 0.2s, box-shadow 0.2s",
               }}
@@ -47,30 +50,29 @@ export function HomePage() {
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
               }}
             >
-              {/* 豆の画像 */}
+              {/* 豆の画像エリア */}
               <div
                 style={{
                   width: "100%",
                   height: 140,
-                  background: "#f0f0f0",
-                  borderRadius: "12px 12px 0 0",
-                  overflow: "hidden",
+                  background: "#f5f5f5",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: 16,
+                  padding: 12,
+                  overflow: "hidden",
                 }}
               >
                 <img
                   src={beanPhotoSrc(bean.photoFile)}
                   alt={bean.name}
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    maxWidth: "100%",
+                    maxHeight: "100%",
                     objectFit: "contain",
                   }}
                   onError={(e) => {
-                    // 画像読み込み失敗時は背景色のみ表示
+                    // 画像読み込み失敗時は非表示
                     e.currentTarget.style.display = "none";
                   }}
                 />
@@ -79,12 +81,16 @@ export function HomePage() {
               {/* 豆の名前 */}
               <div
                 style={{
-                  padding: "12px 8px",
-                  fontSize: 14,
+                  padding: "12px 10px",
+                  fontSize: 13,
                   fontWeight: 700,
                   color: "#1e3932",
                   textAlign: "center",
                   lineHeight: 1.4,
+                  minHeight: 50,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {bean.name}

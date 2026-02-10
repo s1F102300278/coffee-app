@@ -273,6 +273,25 @@ export const COFFEE_BEANS: CoffeeBean[] = [
     }
   },
   {
+    id: "caffe-verona",
+    name: "カフェベロナ",
+    roast: 4,
+    acidity: 1,
+    body: 5,
+    note: "ダークココアのような風味とローストの甘み。チョコレートと相性ぴったり。",
+    photoFile: "Caffe-Verona.jpg",
+    logoFile: "Caffe-Verona.jpg",
+    description: "ダークココアやカラメルシュガーを思わせる豊かな味わいのコーヒー。チョコレートと相性ぴったりです。人々を魅了するその味わいから、真実の愛のストーリーで知られる街の名前が付けられたロマンスあふれるコーヒーです。",
+    keyword: "ダークココアのような風味とローストの甘みと深み",
+    recommended: {
+      brewMethodTitle: "フレンチプレス",
+      brewMethodLines: ["粗挽き", "94°C", "4分"],
+      tipsText: ["ダークココアの風味を引き出すために、じっくり抽出しましょう。", "チョコレートと一緒に楽しむと、相性の良さを実感できます。"],
+      bestTimes: ["午後", "デザートタイム", "特別な時間"],
+      foodPairing: ["ミルクチョコレート", "ダークチョコレート", "カラメル"]
+    }
+  },
+  {
     id: "espresso",
     name: "エスプレッソロースト",
     roast: 4,

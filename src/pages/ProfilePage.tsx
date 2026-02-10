@@ -1,8 +1,9 @@
 // src/pages/ProfilePage.tsx
-import { useState } from "react";
-import { useProfile, AVAILABLE_ICONS } from "../hooks/useProfile";
+import { useState, useEffect } from "react";
 import { useBeanPoints, getBadgeLevel } from "../hooks/useBeanPoints";
 import { HOME_BEANS } from "../data/homeBeans";
+import { AVAILABLE_ICONS } from "../hooks/useProfile";
+import { beanLogoSrc } from "../utils/assets";
 
 type ProfilePageProps = {
   onNavigateToDiagnosis: () => void;
@@ -10,14 +11,50 @@ type ProfilePageProps = {
   diagnosisTypeName: string;
 };
 
+const STORAGE_KEY_USERNAME = "coffee-app-username";
+const STORAGE_KEY_ICON = "coffee-app-icon";
+
 export function ProfilePage({
   onNavigateToDiagnosis,
   hasCompletedDiagnosis,
   diagnosisTypeName,
 }: ProfilePageProps) {
-  const { username, selectedIcon, iconId, setIconId } = useProfile();
+  // localStorageから直接読み込み
+  const loadProfileData = () => {
+    try {
+      const storedUsername = localStorage.getItem(STORAGE_KEY_USERNAME);
+      const storedIconId = localStorage.getItem(STORAGE_KEY_ICON);
+      
+      console.log("=== Loading profile from localStorage ===");
+      console.log("- username:", storedUsername);
+      console.log("- iconId:", storedIconId);
+      
+      return {
+        username: storedUsername || "コーヒー愛好家",
+        iconId: storedIconId || "lightnote"
+      };
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+      return {
+        username: "コーヒー愛好家",
+        iconId: "lightnote"
+      };
+    }
+  };
+
+  const [profile, setProfile] = useState(loadProfileData);
+  
+  // コンポーネントがマウントされるたびに再読み込み（keyが変わるとマウントされる）
+  useEffect(() => {
+    console.log("=== ProfilePage mounted ===");
+    const newProfile = loadProfileData();
+    setProfile(newProfile);
+  }, []); // マウント時のみ
+
   const { getPoints } = useBeanPoints();
-  const [isSelectingIcon, setIsSelectingIcon] = useState(false);
+
+  // 選択中のアイコン情報を取得
+  const selectedIcon = AVAILABLE_ICONS.find((i) => i.id === profile.iconId) || AVAILABLE_ICONS[0];
 
   // コレクション実績を集計
   const totalPoints = HOME_BEANS.reduce((sum, bean) => sum + getPoints(bean.id), 0);
@@ -34,6 +71,8 @@ export function ProfilePage({
     if (level === 2) badgeCounts.lv2++;
     if (level === 3) badgeCounts.lv3++;
   });
+
+  console.log("ProfilePage rendering with:", { username: profile.username, iconId: profile.iconId });
 
   return (
     <div style={{ padding: "20px 16px 100px" }}>
@@ -53,77 +92,47 @@ export function ProfilePage({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            {/* アイコン */}
+            {/* アイコン（表示のみ、クリック不可） */}
             <div
-              onClick={() => setIsSelectingIcon(!isSelectingIcon)}
               style={{
                 width: 80,
                 height: 80,
                 borderRadius: "50%",
-                background: selectedIcon.color,
+                background: "white",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 40,
-                cursor: "pointer",
-                border: "3px solid #f3f4f6",
+                border: "3px solid #00754a",
                 flexShrink: 0,
+                padding: 8,
+                overflow: "hidden",
               }}
             >
-              {selectedIcon.emoji}
+              <img
+                src={beanLogoSrc(selectedIcon.logoFile)}
+                alt={selectedIcon.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+                onError={(e) => {
+                  console.error(`Failed to load logo: ${selectedIcon.logoFile}`);
+                  e.currentTarget.style.display = "none";
+                }}
+              />
             </div>
 
             {/* ユーザー名 */}
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 20, fontWeight: 700, color: "#1e3932" }}>
-                {username}
+                {profile.username}
               </div>
               <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>
-                アイコンをタップして変更
+                設定ページから編集できます
               </div>
             </div>
           </div>
-
-          {/* アイコン選択 */}
-          {isSelectingIcon && (
-            <div
-              style={{
-                marginTop: 16,
-                paddingTop: 16,
-                borderTop: "1px solid #e5e7eb",
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#1e3932", marginBottom: 12 }}>
-                アイコンを選択
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-                {AVAILABLE_ICONS.map((icon) => (
-                  <div
-                    key={icon.id}
-                    onClick={() => {
-                      setIconId(icon.id);
-                      setIsSelectingIcon(false);
-                    }}
-                    style={{
-                      width: "100%",
-                      aspectRatio: "1",
-                      borderRadius: "50%",
-                      background: icon.color,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 32,
-                      cursor: "pointer",
-                      border: iconId === icon.id ? "3px solid #00754a" : "3px solid #f3f4f6",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    {icon.emoji}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 

@@ -5,17 +5,19 @@ export type HomeBean = {
   id: string;
   name: string;
   imageColor: string;
-  photoFile: string; // 追加：実際の写真ファイル名
+  photoFile: string; // 豆写真ファイル名
+  logoFile: string; // ロゴファイル名
   category: "core";
 };
 
 export const HOME_BEANS: HomeBean[] = [
-  // コア豆 16種類すべて（IDをbeans.tsと統一）
+  // コア豆 17種類すべて（IDをbeans.tsと統一）
   {
     id: "lightnote",
     name: "ライトノートブレンド",
     imageColor: "#F5DEB3",
     photoFile: "lightnote-blend.jpg",
+    logoFile: "lightnote-blend-logo.jpg",
     category: "core",
   },
   {
@@ -23,6 +25,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "ブロンドエスプレッソロースト",
     imageColor: "#DEB887",
     photoFile: "blonde-espresso-roast.jpg",
+    logoFile: "blonde-espresso-roast-logo.jpg",
     category: "core",
   },
   {
@@ -30,6 +33,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "ブレックファーストブレンド",
     imageColor: "#D2B48C",
     photoFile: "breakfast-blend.jpg",
+    logoFile: "breakfast-blend-logo.jpg",
     category: "core",
   },
   {
@@ -37,6 +41,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "サイレンブレンド",
     imageColor: "#BC8F8F",
     photoFile: "siren-blend.jpg",
+    logoFile: "siren-blend-logo.jpg",
     category: "core",
   },
   {
@@ -44,6 +49,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "ケニア",
     imageColor: "#CD853F",
     photoFile: "kenya.jpg",
+    logoFile: "kenya-logo.jpg",
     category: "core",
   },
   {
@@ -51,6 +57,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "パイクプレイスロースト",
     imageColor: "#A0826D",
     photoFile: "pike-place-roast.jpg",
+    logoFile: "pike-place-roast-logo.jpg",
     category: "core",
   },
   {
@@ -58,6 +65,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "グアテマラアンティグア",
     imageColor: "#8B7355",
     photoFile: "guatemala-antigua.jpg",
+    logoFile: "guatemala-antigua-logo.jpg",
     category: "core",
   },
   {
@@ -65,6 +73,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "ハウスブレンド",
     imageColor: "#8B4513",
     photoFile: "house-blend.jpg",
+    logoFile: "house-blend-logo.jpg",
     category: "core",
   },
   {
@@ -72,6 +81,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "ディカフェハウスブレンド",
     imageColor: "#A0522D",
     photoFile: "decaf-house-blend.jpg",
+    logoFile: "decaf-house-blend-logo.jpg",
     category: "core",
   },
   {
@@ -79,6 +89,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "コロンビア",
     imageColor: "#8B6914",
     photoFile: "colombia.jpg",
+    logoFile: "colombia-logo.jpg",
     category: "core",
   },
   {
@@ -86,6 +97,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "TOKYOロースト",
     imageColor: "#654321",
     photoFile: "tokyo-roast.jpg",
+    logoFile: "tokyo-roast-logo.jpg",
     category: "core",
   },
   {
@@ -93,6 +105,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "スマトラ",
     imageColor: "#5C4033",
     photoFile: "sumatra.jpg",
+    logoFile: "sumatra-logo.jpg",
     category: "core",
   },
   {
@@ -100,6 +113,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "コモドドラゴンブレンド",
     imageColor: "#4E3629",
     photoFile: "komodo-dragon-blend.jpg",
+    logoFile: "komodo-dragon-blend-logo.jpg",
     category: "core",
   },
   {
@@ -107,6 +121,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "エスプレッソロースト",
     imageColor: "#3E2723",
     photoFile: "espresso-roast.jpg",
+    logoFile: "espresso-roast-logo.jpg",
     category: "core",
   },
   {
@@ -114,6 +129,7 @@ export const HOME_BEANS: HomeBean[] = [
     name: "イタリアンロースト",
     imageColor: "#2F2520",
     photoFile: "italian-roast.jpg",
+    logoFile: "italian-roast-logo.jpg",
     category: "core",
   },
   {
@@ -121,6 +137,15 @@ export const HOME_BEANS: HomeBean[] = [
     name: "フレンチロースト",
     imageColor: "#1C1614",
     photoFile: "french-roast.jpg",
+    logoFile: "french-roast-logo.jpg",
+    category: "core",
+  },
+  {
+    id: "caffe-verona",
+    name: "カフェベロナ",
+    imageColor: "#3E2723",
+    photoFile: "caffe-verona.jpg",
+    logoFile: "caffe-verona-logo.jpg",
     category: "core",
   },
 ] as const;

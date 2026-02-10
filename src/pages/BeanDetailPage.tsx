@@ -23,19 +23,6 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
     );
   }
 
-  // スリーレター取得（名前の頭文字3文字を大文字に）
-  const getThreeLetterCode = (name: string): string => {
-    // カタカナを削除して英語部分を抽出
-    const cleaned = name.replace(/[ぁ-んァ-ヶー]/g, '').trim();
-    if (cleaned.length >= 3) {
-      return cleaned.substring(0, 3).toUpperCase();
-    }
-    // フォールバック: 名前の最初の3文字
-    return name.substring(0, 3);
-  };
-
-  const threeLetterCode = getThreeLetterCode(beanInfo.name);
-
   // ローストレベル表示用のラベル
   const getRoastLabel = (level: number): string => {
     if (level === 1) return "STARBUCKS® BLONDE ROAST";
@@ -121,7 +108,7 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
         </button>
       </div>
 
-      {/* 写真・ロゴ・スリーレターのコンテナ（画像通りのレイアウト） */}
+      {/* 写真・ロゴ・スリーレターのコンテナ */}
       <div
         style={{
           background: "#d9d9d9",
@@ -172,7 +159,7 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
             />
           </div>
 
-          {/* スリーレター */}
+          {/* スリーレター（公式コード使用） */}
           <div
             style={{
               fontSize: 28,
@@ -181,7 +168,7 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
               letterSpacing: "0.05em",
             }}
           >
-            {threeLetterCode}
+            {beanDetail.threeLetterCode}
           </div>
         </div>
 
@@ -308,6 +295,45 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
         </div>
       </div>
 
+      {/* おすすめの抽出方法 */}
+      <div
+        style={{
+          background: "white",
+          borderRadius: 16,
+          padding: 24,
+          marginBottom: 32,
+        }}
+      >
+        <h2
+          style={{
+            fontSize: 18,
+            fontWeight: 800,
+            color: "#1e3932",
+            marginBottom: 16,
+            textAlign: "center",
+          }}
+        >
+          おすすめの抽出方法
+        </h2>
+        <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+          {beanDetail.brewMethods.map((method, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "12px 20px",
+                background: "#00754a",
+                color: "white",
+                borderRadius: 12,
+                fontSize: 15,
+                fontWeight: 700,
+              }}
+            >
+              {method}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* おすすめの飲み方 */}
       <h2
         style={{
@@ -320,38 +346,6 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
       >
         おすすめの飲み方
       </h2>
-
-      {/* 抽出方法 */}
-      <div
-        style={{
-          background: "#a8d5ba",
-          borderRadius: 16,
-          padding: 20,
-          marginBottom: 12,
-        }}
-      >
-        <h3
-          style={{
-            fontSize: 15,
-            fontWeight: 700,
-            color: "#1e3932",
-            marginBottom: 12,
-            textAlign: "center",
-          }}
-        >
-          抽出方法
-        </h3>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#1e3932", marginBottom: 12 }}>
-          ◎{beanDetail.recommended.brewMethodTitle}
-        </div>
-        <div style={{ color: "#1e3932" }}>
-          {beanDetail.recommended.brewMethodLines.map((line, i) => (
-            <div key={i} style={{ fontSize: 14, lineHeight: 1.8, marginBottom: 4 }}>
-              ・{line}
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* 淹れ方のコツ */}
       <div

@@ -1,12 +1,75 @@
 // src/pages/SettingsPage.tsx
 
-export function SettingsPage() {
+type SettingsPageProps = {
+  onNavigateToProfileEdit: () => void;
+};
+
+export function SettingsPage({ onNavigateToProfileEdit }: SettingsPageProps) {
   return (
     <div style={{ padding: "20px 16px 100px" }}>
       <header className="page-header">
         <h1 className="page-title">設定</h1>
         <p className="page-subtitle">アプリの情報と設定</p>
       </header>
+
+      {/* プロフィール編集ボタン */}
+      <section style={{ marginBottom: 16 }}>
+        <button
+          onClick={onNavigateToProfileEdit}
+          style={{
+            width: "100%",
+            background: "white",
+            borderRadius: 20,
+            padding: 24,
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.2s",
+            textAlign: "left",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.12)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.08)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                background: "#ecfdf5",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 24,
+              }}
+            >
+              👤
+            </div>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: "#1e3932",
+                  marginBottom: 4,
+                }}
+              >
+                プロフィールの編集
+              </div>
+              <div style={{ fontSize: 13, color: "#6b7280" }}>
+                名前とアイコンを変更
+              </div>
+            </div>
+            <div style={{ fontSize: 20, color: "#00754a" }}>→</div>
+          </div>
+        </button>
+      </section>
 
       {/* アプリ情報カード */}
       <section style={{ marginBottom: 16 }}>
