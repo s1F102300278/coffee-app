@@ -471,7 +471,8 @@ export function DiagnosisPage({
                 onClick={() => openBeanDetail(top1.name, "detail")}
               />
               <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
-                {typeInfo.beanReasonTop1}
+                {diagnosisResult?.top1Reason ?? typeInfo.beanReasonTop1}
+
               </p>
 
               <BeanCard
@@ -480,7 +481,8 @@ export function DiagnosisPage({
                 onClick={() => openBeanDetail(top2.name, "detail")}
               />
               <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
-                {typeInfo.beanReasonTop2}
+                {diagnosisResult?.top2Reason ?? typeInfo.beanReasonTop2}
+
               </p>
             </div>
           </div>

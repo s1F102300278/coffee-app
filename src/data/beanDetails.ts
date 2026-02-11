@@ -4,13 +4,12 @@ export type BeanDetail = {
   id: string;
   photoFile: string;
   logoFile: string;
-  threeLetterCode: string; // 公式スリーレター
+  threeLetterCode: string;
   description: string;
   keyword: string;
   roast: number;
   acidity: number;
   body: number;
-  brewMethods: string[]; // おすすめ抽出方法（1-2個）
   recommended: {
     brewMethodTitle: string;
     brewMethodLines: string[];
@@ -19,6 +18,7 @@ export type BeanDetail = {
     foodPairing: string[];
   };
 };
+
 
 export const BEAN_DETAILS: Record<string, BeanDetail> = {
   "lightnote": {
@@ -32,7 +32,6 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 1,
     acidity: 4,
     body: 1,
-    brewMethods: ["ペーパードリップ", "コールドブリュー"],
     recommended: {
       brewMethodTitle: "ペーパードリップ",
       brewMethodLines: [
@@ -58,7 +57,6 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 1,
     acidity: 3,
     body: 2,
-    brewMethods: ["エスプレッソマシン", "ペーパードリップ"],
     recommended: {
       brewMethodTitle: "エスプレッソマシン",
       brewMethodLines: [
@@ -82,12 +80,11 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     description:
       "ブラウンシュガーやオレンジを思わせる風味とすっきりとした後味、マイルドな味わいのコーヒーです。一日の始まりにふさわしい、いきいきとしたコーヒーです。",
     keyword: "一日の始まりにふさわしいシトラスを思わせる風味",
-    roast: 3,
+    roast: 2,
     acidity: 5,
     body: 2,
-    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "ドリップコーヒーメーカー",
       brewMethodLines: [
         "挽き目：中挽き",
         "使用量：水200mlに対して豆12-15g",
@@ -111,16 +108,15 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 3,
     acidity: 4,
     body: 3,
-    brewMethods: ["ペーパードリップ", "コーヒープレス"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "フレンチプレス",
       brewMethodLines: [
         "挽き目：粗挽き",
         "湯温：93-96℃",
         "抽出時間：4分",
       ],
       tipsText: [
-        "コーヒープレスで淹れると、豆本来のオイルと風味を楽しめます。",
+        "フレンチプレスで淹れると、豆本来のオイルと風味を楽しめます。",
         "フローラルやシトラスの風味が引き立ちます。",
       ],
       bestTimes: ["いつでも", "仕事の合間", "リラックスタイム"],
@@ -138,9 +134,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 3,
     acidity: 5,
     body: 3,
-    brewMethods: ["ペーパードリップ", "コールドブリュー"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "ハンドドリップ（V60）",
       brewMethodLines: [
         "挽き目：中細挽き",
         "湯温：90-93℃",
@@ -165,9 +160,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 3,
     acidity: 3,
     body: 3,
-    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "ドリップコーヒー",
       brewMethodLines: [
         "挽き目：中挽き",
         "湯温：90-93℃",
@@ -191,15 +185,14 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 4,
     acidity: 3,
     body: 4,
-    brewMethods: ["コーヒープレス", "ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "コーヒープレス",
+      brewMethodTitle: "サイフォン",
       brewMethodLines: [
         "挽き目：中挽き",
         "抽出時間：1-2分",
       ],
       tipsText: [
-        "コーヒープレスで淹れると、上品な香りが一層引き立ちます。",
+        "サイフォンで淹れると、上品な香りが一層引き立ちます。",
         "ココアパウダーややわらかなスパイスの風味を楽しめます。",
       ],
       bestTimes: ["午後", "デザートタイム", "特別な時間"],
@@ -217,9 +210,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 3,
     acidity: 4,
     body: 3,
-    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "ドリップコーヒー",
       brewMethodLines: [
         "挽き目：中挽き",
         "湯温：91-94℃",
@@ -238,14 +230,13 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     logoFile: "decaf-house-blend-logo.jpg",
     threeLetterCode: "DHO",
     description:
-      "トフィーやココアを思わせる風味にほのかなローストの甘み、バランスのとれた味わい深いコーヒー。創業当初よりお届けしてきた私たちの原点と呼べるコーヒーです。",
+      "トフィーやココアを思わせる風味にほのかなローストの甘み、バランスのとれた味わい深いコーヒー。創業当時よりお届けしてきた私たちの原点と呼べるコーヒーです。",
     keyword: "ナッツやココアを思わせるバランスのとれた味わい",
     roast: 3,
     acidity: 3,
     body: 3,
-    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "ドリップコーヒー",
       brewMethodLines: [
         "挽き目：中挽き",
         "湯温：91-94℃",
@@ -269,7 +260,6 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 3,
     acidity: 4,
     body: 3,
-    brewMethods: ["ペーパードリップ", "コーヒープレス"],
     recommended: {
       brewMethodTitle: "ペーパードリップ",
       brewMethodLines: [
@@ -296,9 +286,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 3,
     acidity: 3,
     body: 3,
-    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ペーパードリップ",
+      brewMethodTitle: "エスプレッソ / カフェラテ",
       brewMethodLines: [
         "挽き目：細挽き",
         "抽出方法：エスプレッソ",
@@ -322,16 +311,15 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 4,
     acidity: 1,
     body: 5,
-    brewMethods: ["コーヒープレス"],
     recommended: {
-      brewMethodTitle: "コーヒープレス",
+      brewMethodTitle: "フレンチプレス",
       brewMethodLines: [
         "挽き目：粗挽き",
         "湯温：93-96℃",
         "抽出時間：4-5分",
       ],
       tipsText: [
-        "コーヒープレスで淹れると、豊かなハーブと大地の風味を楽しめます。",
+        "フレンチプレスで淹れると、豊かなハーブと大地の風味を楽しめます。",
         "しっかりとしたコクが特徴の忘れがたい印象のコーヒーです。",
       ],
       bestTimes: ["朝", "集中作業の前", "深夜作業"],
@@ -349,9 +337,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 4,
     acidity: 2,
     body: 4,
-    brewMethods: ["コーヒープレス"],
     recommended: {
-      brewMethodTitle: "コーヒープレス",
+      brewMethodTitle: "コールドブリュー",
       brewMethodLines: [
         "挽き目：粗挽き",
         "抽出時間：冷水で12-24時間",
@@ -375,9 +362,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 4,
     acidity: 1,
     body: 5,
-    brewMethods: ["コーヒープレス", "コールドブリュー"],
     recommended: {
-      brewMethodTitle: "コーヒープレス",
+      brewMethodTitle: "フレンチプレス",
       brewMethodLines: [
         "挽き目：粗挽き",
         "湯温：94°C",
@@ -402,7 +388,6 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 4,
     acidity: 2,
     body: 4,
-    brewMethods: ["エスプレッソマシン"],
     recommended: {
       brewMethodTitle: "エスプレッソマシン",
       brewMethodLines: [
@@ -429,9 +414,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 5,
     acidity: 1,
     body: 5,
-    brewMethods: ["エスプレッソマシン", "コーヒープレス"],
     recommended: {
-      brewMethodTitle: "エスプレッソマシン",
+      brewMethodTitle: "エスプレッソ / カプチーノ",
       brewMethodLines: [
         "挽き目：極細挽き",
         "抽出方法：高圧抽出",
@@ -455,9 +439,8 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     roast: 5,
     acidity: 1,
     body: 4,
-    brewMethods: ["コーヒープレス", "コールドブリュー"],
     recommended: {
-      brewMethodTitle: "コーヒープレス",
+      brewMethodTitle: "フレンチプレス",
       brewMethodLines: [
         "挽き目：粗挽き",
         "湯温：93-96℃",

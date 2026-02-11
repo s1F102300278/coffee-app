@@ -186,6 +186,7 @@ export interface QuestionOption {
   t: string; // 選択肢のテキスト
   type: TypeId;
   tag?: TagId;
+  w?: 1 | 2;
 }
 
 export interface QuestionSpec {
@@ -243,60 +244,60 @@ export const ROUTE_A_QUESTIONS: QuestionSpec[] = [
     id: "A-5",
     q: "この中で好きな焼き菓子は？",
     options: [
-      { t: "シュガードーナツ", type: "MOOD", tag: "sweet" },
-      { t: "チョコレートチャンクスコーン", type: "SPICE", tag: "cocoa" },
-      { t: "アメリカンワッフル", type: "BALANCE", tag: "nutty" },
-      { t: "シナモンロール", type: "SPICE", tag: "spice" },
+      { t: "シュガードーナツ", type: "MOOD", tag: "sweet" , w: 2 },
+      { t: "チョコレートチャンクスコーン", type: "SPICE", tag: "cocoa", w: 2  },
+      { t: "アメリカンワッフル", type: "BALANCE", tag: "nutty", w: 2  },
+      { t: "シナモンロール", type: "SPICE", tag: "spice", w: 2  },
     ],
   },
   {
     id: "A-6",
     q: "この中で好きなケーキは？",
     options: [
-      { t: "ニューヨークチーズケーキ", type: "BALANCE", tag: "nutty" },
-      { t: "チョコレートタルト", type: "SPICE", tag: "cocoa" },
-      { t: "オレンジケーキ", type: "AROMA", tag: "citrus" },
-      { t: "抹茶のロールケーキ", type: "AROMA", tag: "herbal" },
+      { t: "ニューヨークチーズケーキ", type: "BALANCE", tag: "nutty" , w: 2 },
+      { t: "チョコレートタルト", type: "SPICE", tag: "cocoa" , w: 2 },
+      { t: "オレンジケーキ", type: "AROMA", tag: "citrus", w: 2  },
+      { t: "抹茶のロールケーキ", type: "AROMA", tag: "herbal", w: 2  },
     ],
   },
   {
     id: "A-7",
     q: "この中で好きなケーキは？②",
     options: [
-      { t: "ピーチ＆ミルクケーキ", type: "MOOD", tag: "sweet" },
-      { t: "抹茶ティラミス", type: "AROMA", tag: "herbal" },
-      { t: "ホワイトモカケーキ", type: "MOOD", tag: "caramel" },
-      { t: "手しぼり栗のモンブラン", type: "BALANCE", tag: "nutty" },
+      { t: "ピーチ＆ミルクケーキ", type: "MOOD", tag: "sweet" , w: 2 },
+      { t: "抹茶ティラミス", type: "AROMA", tag: "herbal" , w: 2 },
+      { t: "ホワイトモカケーキ", type: "MOOD", tag: "caramel" , w: 2 },
+      { t: "手しぼり栗のモンブラン", type: "BALANCE", tag: "nutty", w: 2  },
     ],
   },
   {
     id: "A-8",
     q: "この中で好きな石窯フィローネは？",
     options: [
-      { t: "ハム＆マリボーチーズの石窯フィローネ", type: "BALANCE", tag: "balance" },
-      { t: "ヴィーナソーセージ石窯フィローネ", type: "SPICE", tag: "rich" },
-      { t: "キーマカレー石窯フィローネ", type: "SPICE", tag: "spice" },
-      { t: "バジルチキン＆トマトモッツァレラ石窯フィローネ", type: "AROMA", tag: "refresh" },
+      { t: "ハム＆マリボーチーズの石窯フィローネ", type: "BALANCE", tag: "balance" , w: 2 },
+      { t: "ヴィーナソーセージ石窯フィローネ", type: "SPICE", tag: "rich", w: 2  },
+      { t: "キーマカレー石窯フィローネ", type: "SPICE", tag: "spice", w: 2  },
+      { t: "バジルチキン＆トマトモッツァレラ石窯フィローネ", type: "AROMA", tag: "refresh" , w: 2 },
     ],
   },
   {
     id: "A-9",
     q: "この中で好きなフラペチーノは？",
     options: [
-      { t: "ダークモカフラペチーノ", type: "SPICE", tag: "cocoa" },
-      { t: "抹茶クリームフラペチーノ", type: "AROMA", tag: "herbal" },
-      { t: "キャラメルフラペチーノ", type: "MOOD", tag: "caramel" },
-      { t: "コーヒーフラペチーノ", type: "BALANCE", tag: "balance" },
+      { t: "ダークモカフラペチーノ", type: "SPICE", tag: "cocoa" , w: 2 },
+      { t: "抹茶クリームフラペチーノ", type: "AROMA", tag: "herbal" , w: 2 },
+      { t: "キャラメルフラペチーノ", type: "MOOD", tag: "caramel" , w: 2 },
+      { t: "コーヒーフラペチーノ", type: "BALANCE", tag: "balance" , w: 2 },
     ],
   },
   {
     id: "A-10",
     q: "この中で好きなフルーツは？",
     options: [
-      { t: "イチゴ", type: "AROMA", tag: "berry" },
-      { t: "バナナ", type: "BALANCE", tag: "calm" },
-      { t: "ピーチ", type: "MOOD", tag: "fruity" },
-      { t: "オレンジ", type: "AROMA", tag: "citrus" },
+      { t: "イチゴ", type: "AROMA", tag: "berry", w: 2  },
+      { t: "バナナ", type: "BALANCE", tag: "calm", w: 2  },
+      { t: "ピーチ", type: "MOOD", tag: "fruity", w: 2  },
+      { t: "オレンジ", type: "AROMA", tag: "citrus" , w: 2 },
     ],
   },
 
@@ -431,10 +432,10 @@ export const ROUTE_A_QUESTIONS: QuestionSpec[] = [
     id: "A-23",
     q: "この中でコーヒーと一緒に食べたいのは？",
     options: [
-      { t: "チョコ系スイーツ", type: "SPICE", tag: "cocoa" },
-      { t: "チーズ系スイーツ", type: "BALANCE", tag: "nutty" },
-      { t: "フルーツ系スイーツ", type: "AROMA", tag: "fruity" },
-      { t: "甘めのドーナツ系", type: "MOOD", tag: "sweet" },
+      { t: "チョコ系スイーツ", type: "SPICE", tag: "cocoa", w: 2  },
+      { t: "チーズ系スイーツ", type: "BALANCE", tag: "nutty" , w: 2 },
+      { t: "フルーツ系スイーツ", type: "AROMA", tag: "fruity", w: 2  },
+      { t: "甘めのドーナツ系", type: "MOOD", tag: "sweet", w: 2  },
     ],
   },
   {
@@ -543,40 +544,40 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     id: "B-3",
     q: "この中で好きな焼き菓子は？",
     options: [
-      { t: "シュガードーナツ", type: "MOOD", tag: "sweet" },
-      { t: "チョコレートチャンクスコーン", type: "SPICE", tag: "cocoa" },
-      { t: "アメリカンワッフル", type: "BALANCE", tag: "nutty" },
-      { t: "シナモンロール", type: "SPICE", tag: "spice" },
+      { t: "シュガードーナツ", type: "MOOD", tag: "sweet", w: 2  },
+      { t: "チョコレートチャンクスコーン", type: "SPICE", tag: "cocoa", w: 2  },
+      { t: "アメリカンワッフル", type: "BALANCE", tag: "nutty" , w: 2 },
+      { t: "シナモンロール", type: "SPICE", tag: "spice" , w: 2 },
     ],
   },
   {
     id: "B-4",
     q: "この中で好きなケーキは？",
     options: [
-      { t: "ニューヨークチーズケーキ", type: "BALANCE", tag: "nutty" },
-      { t: "チョコレートタルト", type: "SPICE", tag: "cocoa" },
-      { t: "オレンジケーキ", type: "AROMA", tag: "citrus" },
-      { t: "抹茶のロールケーキ", type: "AROMA", tag: "herbal" },
+      { t: "ニューヨークチーズケーキ", type: "BALANCE", tag: "nutty" , w: 2 },
+      { t: "チョコレートタルト", type: "SPICE", tag: "cocoa", w: 2  },
+      { t: "オレンジケーキ", type: "AROMA", tag: "citrus", w: 2  },
+      { t: "抹茶のロールケーキ", type: "AROMA", tag: "herbal" , w: 2 },
     ],
   },
   {
     id: "B-5",
     q: "この中で好きなフラペチーノは？",
     options: [
-      { t: "ダークモカフラペチーノ", type: "SPICE", tag: "cocoa" },
-      { t: "抹茶クリームフラペチーノ", type: "AROMA", tag: "herbal" },
-      { t: "キャラメルフラペチーノ", type: "MOOD", tag: "caramel" },
-      { t: "コーヒーフラペチーノ", type: "BALANCE", tag: "balance" },
+      { t: "ダークモカフラペチーノ", type: "SPICE", tag: "cocoa", w: 2  },
+      { t: "抹茶クリームフラペチーノ", type: "AROMA", tag: "herbal" , w: 2 },
+      { t: "キャラメルフラペチーノ", type: "MOOD", tag: "caramel", w: 2  },
+      { t: "コーヒーフラペチーノ", type: "BALANCE", tag: "balance", w: 2  },
     ],
   },
   {
     id: "B-6",
     q: "この中で好きなフルーツは？",
     options: [
-      { t: "イチゴ", type: "AROMA", tag: "berry" },
-      { t: "バナナ", type: "BALANCE", tag: "calm" },
-      { t: "ピーチ", type: "MOOD", tag: "fruity" },
-      { t: "オレンジ", type: "AROMA", tag: "citrus" },
+      { t: "イチゴ", type: "AROMA", tag: "berry", w: 2  },
+      { t: "バナナ", type: "BALANCE", tag: "calm" , w: 2 },
+      { t: "ピーチ", type: "MOOD", tag: "fruity", w: 2  },
+      { t: "オレンジ", type: "AROMA", tag: "citrus" , w: 2 },
     ],
   },
 
@@ -607,10 +608,10 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     id: "B-9",
     q: "この中で好きな石窯フィローネは？",
     options: [
-      { t: "ハム＆マリボーチーズの石窯フィローネ", type: "BALANCE", tag: "balance" },
-      { t: "ヴィーナソーセージ石窯フィローネ", type: "SPICE", tag: "rich" },
-      { t: "キーマカレー石窯フィローネ", type: "SPICE", tag: "spice" },
-      { t: "バジルチキン＆トマトモッツァレラ石窯フィローネ", type: "AROMA", tag: "refresh" },
+      { t: "ハム＆マリボーチーズの石窯フィローネ", type: "BALANCE", tag: "balance", w: 2  },
+      { t: "ヴィーナソーセージ石窯フィローネ", type: "SPICE", tag: "rich", w: 2  },
+      { t: "キーマカレー石窯フィローネ", type: "SPICE", tag: "spice", w: 2  },
+      { t: "バジルチキン＆トマトモッツァレラ石窯フィローネ", type: "AROMA", tag: "refresh", w: 2  },
     ],
   },
   {
@@ -725,10 +726,10 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     id: "B-20",
     q: "この中でコーヒーと一緒に食べたいのは？",
     options: [
-      { t: "チョコ系スイーツ", type: "SPICE", tag: "cocoa" },
-      { t: "チーズ系スイーツ", type: "BALANCE", tag: "nutty" },
-      { t: "フルーツ系スイーツ", type: "AROMA", tag: "fruity" },
-      { t: "甘めのドーナツ系", type: "MOOD", tag: "sweet" },
+      { t: "チョコ系スイーツ", type: "SPICE", tag: "cocoa" , w: 2 },
+      { t: "チーズ系スイーツ", type: "BALANCE", tag: "nutty", w: 2  },
+      { t: "フルーツ系スイーツ", type: "AROMA", tag: "fruity" , w: 2 },
+      { t: "甘めのドーナツ系", type: "MOOD", tag: "sweet", w: 2  },
     ],
   },
   {

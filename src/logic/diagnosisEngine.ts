@@ -13,15 +13,13 @@ import type {
   TypeId,
   TagId,
   RouteId,
-  QuestionSpec,
   BeanSpec,
   CoffeeTypeSpec,
 } from "../data/diagnosisSpec";
 
-
 // ========== 型定義 ==========
 export interface UserAnswers {
-  [questionId: string]: number; // 質問IDと選択肢インデックス（0-3）
+  [questionId: string]: number; // 質問IDと選択肢インデックス
 }
 
 export interface TypeScores {
@@ -42,6 +40,11 @@ export interface DiagnosisResult {
   top2Bean: BeanSpec;
   typeScores: TypeScores;
   tagScores: TagScores;
+
+  // 追加：結果の納得感を上げるための説明情報
+  topTags: TagId[];      // 全体で強く出たタグ上位（最大3）
+  top1Reason: string;   // Top1豆の理由（自動生成）
+  top2Reason: string;   // Top2豆の理由（自動生成）
 }
 
 // ========== 1. スコア計算 ==========
@@ -62,18 +65,17 @@ export function computeScores(
 
   for (const question of questions) {
     const choiceIndex = answers[question.id];
-    if (choiceIndex === undefined || choiceIndex >= question.options.length) {
-      continue;
-    }
+    if (choiceIndex === undefined || choiceIndex >= question.options.length) continue;
 
     const option = question.options[choiceIndex];
 
-    // Type Score: 常に加算
+    // Type Score: タイプ判定はブレないように常に +1（重み付けしない）
     typeScores[option.type]++;
 
-    // Tag Score: オプションがタグを持つ場合のみ加算
+    // Tag Score: タグがある場合のみ加算（フード系などは w:2 を付ける）
     if (option.tag) {
-      tagScores[option.tag] = (tagScores[option.tag] || 0) + 1;
+      const w = option.w ?? 1;
+      tagScores[option.tag] = (tagScores[option.tag] || 0) + w;
     }
   }
 
@@ -89,102 +91,67 @@ export function determineType(
   const questions = route === "routeA" ? ROUTE_A_QUESTIONS : ROUTE_B_QUESTIONS;
   const tieBreakerQuestionId = route === "routeA" ? "A-30" : "B-30";
 
-  // 最高スコアのタイプを取得
   const maxScore = Math.max(...Object.values(typeScores));
   const topTypes = (Object.keys(typeScores) as TypeId[]).filter(
     (type) => typeScores[type] === maxScore
   );
 
-  // 同点がない場合
-  if (topTypes.length === 1) {
-    return topTypes[0];
-  }
+  if (topTypes.length === 1) return topTypes[0];
 
-  // 同点の場合: 最終問（A-20 or B-20）の選択肢で決定
-  const tieBreakerQuestion = questions.find(
-    (q) => q.id === tieBreakerQuestionId
-  );
-
-  if (!tieBreakerQuestion) {
-    console.error("Tie breaker question not found");
-    return fallbackTypePriority(topTypes);
-  }
+  const tieBreakerQuestion = questions.find((q) => q.id === tieBreakerQuestionId);
+  if (!tieBreakerQuestion) return fallbackTypePriority(topTypes);
 
   const tieBreakerChoice = answers[tieBreakerQuestionId];
-
   if (
     tieBreakerChoice === undefined ||
     tieBreakerChoice >= tieBreakerQuestion.options.length
   ) {
-    console.warn("Tie breaker answer not found, using fallback");
     return fallbackTypePriority(topTypes);
   }
 
   const decidedType = tieBreakerQuestion.options[tieBreakerChoice].type;
+  if (topTypes.includes(decidedType)) return decidedType;
 
-  // 最終問で選ばれたタイプが同点グループに含まれているか確認
-  if (topTypes.includes(decidedType)) {
-    return decidedType;
-  }
-
-  // 含まれていない場合はフォールバック
-  console.warn("Tie breaker type not in top types, using fallback");
   return fallbackTypePriority(topTypes);
 }
 
-// フォールバック: 固定優先順位 BALANCE > MOOD > AROMA > SPICE
 function fallbackTypePriority(candidates: TypeId[]): TypeId {
   const priority: TypeId[] = ["BALANCE", "MOOD", "AROMA", "SPICE"];
-  for (const type of priority) {
-    if (candidates.includes(type)) {
-      return type;
-    }
-  }
-  return candidates[0]; // 安全のため
+  for (const type of priority) if (candidates.includes(type)) return type;
+  return candidates[0];
 }
 
-// ========== 3. 豆候補の絞り込み ==========
-function getCandidateBeans(decidedType: TypeId): BeanSpec[] {
-  return BEAN_SPECS.filter((bean) =>
-    bean.typeMembership.includes(decidedType)
-  );
-}
-
-// ========== 4. 豆スコアリング ==========
+// ========== 3. 豆スコアリング（ソフト制限：全豆を対象にして同タイプにボーナス） ==========
 interface BeanScore {
   bean: BeanSpec;
   tagMatchScore: number;
   uniqueTagMatches: number;
   coreTagMatches: number;
+  typeBonus: number;
   priorityIndex: number;
 }
 
 function scoreBeans(
-  candidates: BeanSpec[],
+  beans: BeanSpec[],
   tagScores: TagScores,
   decidedType: TypeId
 ): BeanScore[] {
   const typeSpec = COFFEE_TYPE_SPECS[decidedType];
   const priority = BEAN_PRIORITY[decidedType];
 
-  return candidates.map((bean) => {
-    // タグマッチスコア: sum(tagScores[tag] for tag in bean.tags)
+  return beans.map((bean) => {
     const tagMatchScore = bean.tags.reduce(
       (sum, tag) => sum + (tagScores[tag] || 0),
       0
     );
 
-    // ユニークなタグマッチ数: count of bean.tags where tagScores[tag] > 0
-    const uniqueTagMatches = bean.tags.filter(
-      (tag) => (tagScores[tag] || 0) > 0
-    ).length;
+    const uniqueTagMatches = bean.tags.filter((tag) => (tagScores[tag] || 0) > 0).length;
 
-    // コアタグとのマッチ数: count of bean.tags in type.coreTags
-    const coreTagMatches = bean.tags.filter((tag) =>
-      typeSpec.coreTags.includes(tag)
-    ).length;
+    const coreTagMatches = bean.tags.filter((tag) => typeSpec.coreTags.includes(tag)).length;
 
-    // 優先順位インデックス（小さいほど優先）
+    // 同タイプの豆は「候補として出やすい」程度にボーナス
+    const typeBonus = bean.typeMembership.includes(decidedType) ? 2 : 0;
+
     const priorityIndex = priority.indexOf(bean.name);
 
     return {
@@ -192,78 +159,95 @@ function scoreBeans(
       tagMatchScore,
       uniqueTagMatches,
       coreTagMatches,
+      typeBonus,
       priorityIndex: priorityIndex === -1 ? 999 : priorityIndex,
     };
   });
 }
 
-// ========== 5. トップ2選出 ==========
+// ========== 4. トップ2選出 ==========
 function selectTop2(beanScores: BeanScore[]): [BeanSpec, BeanSpec] {
-  // ソート: タグマッチスコア > ユニークタグマッチ > コアタグマッチ > 優先順位
   const sorted = [...beanScores].sort((a, b) => {
-    // 1. タグマッチスコアで比較
-    if (a.tagMatchScore !== b.tagMatchScore) {
-      return b.tagMatchScore - a.tagMatchScore;
-    }
+    // 1) タグマッチ（最優先）
+    if (a.tagMatchScore !== b.tagMatchScore) return b.tagMatchScore - a.tagMatchScore;
 
-    // 2. ユニークタグマッチ数で比較
-    if (a.uniqueTagMatches !== b.uniqueTagMatches) {
+    // 2) 同タイプボーナス
+    if (a.typeBonus !== b.typeBonus) return b.typeBonus - a.typeBonus;
+
+    // 3) ユニークタグマッチ数
+    if (a.uniqueTagMatches !== b.uniqueTagMatches)
       return b.uniqueTagMatches - a.uniqueTagMatches;
-    }
 
-    // 3. コアタグマッチ数で比較
-    if (a.coreTagMatches !== b.coreTagMatches) {
-      return b.coreTagMatches - a.coreTagMatches;
-    }
+    // 4) コアタグマッチ数
+    if (a.coreTagMatches !== b.coreTagMatches) return b.coreTagMatches - a.coreTagMatches;
 
-    // 4. 優先順位で比較
+    // 5) 優先順位
     return a.priorityIndex - b.priorityIndex;
   });
 
-  if (sorted.length < 2) {
-    throw new Error(
-      `Not enough beans for this type (found ${sorted.length})`
-    );
-  }
-
+  if (sorted.length < 2) throw new Error(`Not enough beans (found ${sorted.length})`);
   return [sorted[0].bean, sorted[1].bean];
 }
 
+// ========== 5. 理由の自動生成 ==========
+const TAG_LABELS: Record<TagId, string> = {
+  calm: "落ち着き",
+  balance: "バランス",
+  light: "軽やかさ",
+  refresh: "すっきり感",
+  aroma: "香り",
+  fruity: "フルーティ",
+  nutty: "香ばしさ",
+  rich: "コク",
+  cocoa: "ココア/チョコ",
+  caramel: "キャラメル",
+  citrus: "柑橘",
+  berry: "ベリー",
+  floral: "華やかさ",
+  herbal: "ハーブ/抹茶",
+  spice: "スパイス",
+  smoky: "スモーキー",
+  sweet: "甘み",
+  dark: "ビター感",
+};
+
+function getTopTags(tagScores: TagScores, limit = 3): TagId[] {
+  return (Object.keys(tagScores) as TagId[])
+    .filter((t) => (tagScores[t] || 0) > 0)
+    .sort((a, b) => (tagScores[b] || 0) - (tagScores[a] || 0))
+    .slice(0, limit);
+}
+
+function getBeanTopMatchedTags(bean: BeanSpec, tagScores: TagScores, limit = 3): TagId[] {
+  return [...bean.tags]
+    .filter((t) => (tagScores[t] || 0) > 0)
+    .sort((a, b) => (tagScores[b] || 0) - (tagScores[a] || 0))
+    .slice(0, limit) as TagId[];
+}
+
+function buildBeanReason(bean: BeanSpec, decidedType: TypeId, tagScores: TagScores): string {
+  const matched = getBeanTopMatchedTags(bean, tagScores, 3);
+  const labels = matched.length ? matched.map((t) => TAG_LABELS[t]).join("・") : "飲みやすさ";
+  const typeName = COFFEE_TYPE_SPECS[decidedType].displayName;
+  return `あなたの回答では「${labels}」の傾向が強めでした。${bean.name}はその方向性と相性がよく、${typeName}の魅力を気持ちよく楽しめる一杯です。`;
+}
+
 // ========== メイン診断関数 ==========
-export function diagnose(
-  answers: UserAnswers,
-  route: RouteId
-): DiagnosisResult {
-  // 1. スコア計算
+export function diagnose(answers: UserAnswers, route: RouteId): DiagnosisResult {
   const { typeScores, tagScores } = computeScores(answers, route);
 
-  // 2. タイプ判定
   const decidedType = determineType(typeScores, answers, route);
   const typeSpec = COFFEE_TYPE_SPECS[decidedType];
 
-  // 3. 豆候補の絞り込み
-  const candidates = getCandidateBeans(decidedType);
+  // 全豆を対象にスコアリング（ソフト制限）
+  const beanScores = scoreBeans(BEAN_SPECS, tagScores, decidedType);
 
-  if (candidates.length < 2) {
-    throw new Error(
-      `Not enough candidate beans for type ${decidedType} (found ${candidates.length})`
-    );
-  }
-
-  // 4. 豆スコアリング
-  const beanScores = scoreBeans(candidates, tagScores, decidedType);
-
-  // 5. トップ2選出
   const [top1Bean, top2Bean] = selectTop2(beanScores);
 
-  // デバッグログ（開発時のみ）
-  console.log("=== Diagnosis Result ===");
-  console.log("Route:", route);
-  console.log("Type Scores:", typeScores);
-  console.log("Tag Scores:", tagScores);
-  console.log("Decided Type:", decidedType);
-  console.log("Top1:", top1Bean.name);
-  console.log("Top2:", top2Bean.name);
+  const topTags = getTopTags(tagScores, 3);
+
+  const top1Reason = buildBeanReason(top1Bean, decidedType, tagScores);
+  const top2Reason = buildBeanReason(top2Bean, decidedType, tagScores);
 
   return {
     decidedType,
@@ -272,5 +256,8 @@ export function diagnose(
     top2Bean,
     typeScores,
     tagScores,
+    topTags,
+    top1Reason,
+    top2Reason,
   };
 }
