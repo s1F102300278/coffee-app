@@ -11,6 +11,8 @@ import { diagnose } from "../logic/diagnosisEngine";
 
 import { BeanCard } from "../components/BeanCard";
 import { COFFEE_BEANS } from "../data/beans";
+import { BEAN_DETAILS } from "../data/beanDetails";
+import { beanLogoSrc } from "../utils/assets";
 
 type DiagnosisStartView = "main" | "resultStored" | "detailStored";
 
@@ -83,10 +85,21 @@ export function DiagnosisPage({
   const top1 = diagnosisResult?.top1Bean;
   const top2 = diagnosisResult?.top2Bean;
 
-  // ★★★ 追加：豆名からIDを検索する関数 ★★★
+  // 豆名からIDを検索する関数
   function getBeanIdByName(beanName: string): string | null {
     const bean = COFFEE_BEANS.find((b) => b.name === beanName);
     return bean?.id || null;
+  }
+
+  // 豆名からロゴパスを取得する関数
+  function getBeanLogoByName(beanName: string): string | undefined {
+    const beanId = getBeanIdByName(beanName);
+    if (!beanId) return undefined;
+    
+    const beanDetail = BEAN_DETAILS[beanId];
+    if (!beanDetail) return undefined;
+    
+    return beanLogoSrc(beanDetail.logoFile);
   }
 
   function loadStoredDiagnosis() {
@@ -366,11 +379,13 @@ export function DiagnosisPage({
               <BeanCard
                 rankLabel="1位"
                 beanName={top1.name}
+                imageSrc={getBeanLogoByName(top1.name)}
                 onClick={() => openBeanDetail(top1.name, "result")}
               />
               <BeanCard
                 rankLabel="2位"
                 beanName={top2.name}
+                imageSrc={getBeanLogoByName(top2.name)}
                 onClick={() => openBeanDetail(top2.name, "result")}
               />
             </div>
@@ -468,21 +483,21 @@ export function DiagnosisPage({
               <BeanCard
                 rankLabel="1位"
                 beanName={top1.name}
+                imageSrc={getBeanLogoByName(top1.name)}
                 onClick={() => openBeanDetail(top1.name, "detail")}
               />
               <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
                 {diagnosisResult?.top1Reason ?? typeInfo.beanReasonTop1}
-
               </p>
 
               <BeanCard
                 rankLabel="2位"
                 beanName={top2.name}
+                imageSrc={getBeanLogoByName(top2.name)}
                 onClick={() => openBeanDetail(top2.name, "detail")}
               />
               <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7 }}>
                 {diagnosisResult?.top2Reason ?? typeInfo.beanReasonTop2}
-
               </p>
             </div>
           </div>
@@ -585,6 +600,7 @@ export function DiagnosisPage({
                 <BeanCard
                   rankLabel="1位"
                   beanName={storedDiagnosis.firstBeanName}
+                  imageSrc={getBeanLogoByName(storedDiagnosis.firstBeanName)}
                   onClick={() =>
                     openBeanDetail(storedDiagnosis.firstBeanName!, "resultStored")
                   }
@@ -594,6 +610,7 @@ export function DiagnosisPage({
                 <BeanCard
                   rankLabel="2位"
                   beanName={storedDiagnosis.secondBeanName}
+                  imageSrc={getBeanLogoByName(storedDiagnosis.secondBeanName)}
                   onClick={() =>
                     openBeanDetail(
                       storedDiagnosis.secondBeanName!,
@@ -699,6 +716,7 @@ export function DiagnosisPage({
                 <BeanCard
                   rankLabel="1位"
                   beanName={storedDiagnosis.firstBeanName}
+                  imageSrc={getBeanLogoByName(storedDiagnosis.firstBeanName)}
                   onClick={() =>
                     openBeanDetail(storedDiagnosis.firstBeanName!, "detailStored")
                   }
@@ -708,6 +726,7 @@ export function DiagnosisPage({
                 <BeanCard
                   rankLabel="2位"
                   beanName={storedDiagnosis.secondBeanName}
+                  imageSrc={getBeanLogoByName(storedDiagnosis.secondBeanName)}
                   onClick={() =>
                     openBeanDetail(
                       storedDiagnosis.secondBeanName!,
@@ -724,7 +743,7 @@ export function DiagnosisPage({
   }
 
   // -------------------------
-  // 画面：beanDetail ★★★ BeanDetailPageコンポーネントを使用 ★★★
+  // 画面：beanDetail
   // -------------------------
   if (currentView === "beanDetail" && selectedBeanName) {
     const beanId = getBeanIdByName(selectedBeanName);

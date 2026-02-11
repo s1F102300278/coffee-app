@@ -30,18 +30,20 @@ export function BeanCard({ rankLabel, beanName, imageSrc, onClick }: BeanCardPro
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {/* 画像部分（placeholder） */}
+      {/* 画像部分 */}
       <div
         style={{
           width: 80,
           height: 80,
           borderRadius: 12,
-          background: rankLabel === "1位" ? "#00754a" : "#6b7280",
+          background: imageSrc ? "white" : (rankLabel === "1位" ? "#00754a" : "#6b7280"),
+          border: imageSrc ? "2px solid #e5e7eb" : "none",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: 40,
           flexShrink: 0,
+          padding: imageSrc ? 8 : 0,
         }}
       >
         {imageSrc ? (
@@ -51,8 +53,11 @@ export function BeanCard({ rankLabel, beanName, imageSrc, onClick }: BeanCardPro
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
-              borderRadius: 12,
+              objectFit: "contain",
+            }}
+            onError={(e) => {
+              console.error(`Failed to load bean logo: ${imageSrc}`);
+              e.currentTarget.style.display = "none";
             }}
           />
         ) : (
