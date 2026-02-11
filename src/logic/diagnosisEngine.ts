@@ -87,7 +87,7 @@ export function determineType(
   route: RouteId
 ): TypeId {
   const questions = route === "routeA" ? ROUTE_A_QUESTIONS : ROUTE_B_QUESTIONS;
-  const tieBreakerQuestionId = route === "routeA" ? "A-20" : "B-20";
+  const tieBreakerQuestionId = route === "routeA" ? "A-30" : "B-30";
 
   // 最高スコアのタイプを取得
   const maxScore = Math.max(...Object.values(typeScores));

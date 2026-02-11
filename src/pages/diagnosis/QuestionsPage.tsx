@@ -14,7 +14,8 @@ type QuestionsPageProps = {
   onBack: () => void;
 };
 
-const CHOICE_LABELS = ["A", "B", "C", "D"] as const;
+const CHOICE_LABELS = ["A","B","C","D","E","F"] as const;
+
 
 export function QuestionsPage({
   route,

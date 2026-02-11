@@ -2,7 +2,9 @@
 // JSONを直接TypeScriptデータとして定義
 
 export type TypeId = "BALANCE" | "MOOD" | "AROMA" | "SPICE";
-export type TagId = "calm" | "balance" | "light" | "refresh" | "aroma" | "fruity" | "nutty" | "rich";
+export type TagId =
+  | "calm" | "balance" | "light" | "refresh" | "aroma" | "fruity" | "nutty" | "rich"
+  | "cocoa" | "caramel" | "citrus" | "berry" | "floral" | "herbal" | "spice" | "smoky" | "sweet" | "dark";
 export type RouteId = "routeA" | "routeB";
 
 // ========== タイプ定義 ==========
@@ -62,84 +64,90 @@ export const BEAN_SPECS: BeanSpec[] = [
   {
     name: "ライトノートブレンド",
     typeMembership: ["MOOD", "AROMA"],
-    tags: ["light", "refresh", "aroma"],
+    tags: ["light", "refresh", "aroma", "cocoa", "calm"],
   },
   {
     name: "ブロンドエスプレッソロースト",
     typeMembership: ["MOOD"],
-    tags: ["light", "refresh"],
+    tags: ["light", "refresh", "caramel", "citrus", "balance"],
   },
   {
     name: "ブレックファーストブレンド",
     typeMembership: ["MOOD"],
-    tags: ["refresh", "light"],
+    tags: ["refresh", "light", "citrus", "calm", "balance"],
   },
   {
     name: "サイレンブレンド",
     typeMembership: ["MOOD", "AROMA"],
-    tags: ["aroma", "fruity"],
+    tags: ["aroma", "fruity", "floral", "citrus", "balance"],
   },
   {
     name: "ケニア",
     typeMembership: ["AROMA", "SPICE"],
-    tags: ["fruity", "aroma"],
+    tags: ["fruity", "berry", "citrus", "refresh", "rich"],
   },
   {
     name: "パイクプレイスロースト",
     typeMembership: ["BALANCE"],
-    tags: ["balance", "calm"],
+    tags: ["balance", "calm", "nutty", "cocoa"],
   },
   {
     name: "グアテマラアンティグア",
     typeMembership: ["AROMA"],
-    tags: ["aroma", "nutty"],
+    tags: ["aroma", "nutty", "cocoa", "spice", "balance"],
   },
   {
     name: "ハウスブレンド",
     typeMembership: ["BALANCE"],
-    tags: ["nutty", "balance"],
+    tags: ["nutty", "balance", "cocoa", "caramel", "calm"],
   },
   {
     name: "ディカフェハウスブレンド",
     typeMembership: ["BALANCE"],
-    tags: ["calm", "balance"],
+    tags: ["calm", "balance", "nutty", "cocoa", "light"],
   },
   {
     name: "コロンビア",
     typeMembership: ["BALANCE"],
-    tags: ["nutty", "balance"],
+    tags: ["nutty", "balance", "herbal", "citrus", "calm"],
   },
   {
     name: "TOKYOロースト",
     typeMembership: ["BALANCE"],
-    tags: ["calm", "balance"],
+    tags: ["calm", "balance", "spice", "herbal", "rich"],
   },
   {
     name: "スマトラ",
     typeMembership: ["SPICE"],
-    tags: ["rich", "nutty"],
+    tags: ["rich", "nutty", "herbal", "dark", "smoky"],
   },
   {
     name: "コモドドラゴンブレンド",
     typeMembership: ["SPICE"],
-    tags: ["rich", "nutty"],
+    tags: ["rich", "nutty", "herbal", "spice", "dark"],
+  },
+  {
+    name: "カフェベロナ",
+    typeMembership: ["SPICE"],
+    tags: ["rich", "cocoa", "caramel", "dark", "nutty"],
   },
   {
     name: "エスプレッソロースト",
     typeMembership: ["SPICE"],
-    tags: ["rich", "nutty"],
+    tags: ["rich", "caramel", "dark", "cocoa", "balance"],
   },
   {
     name: "イタリアンロースト",
     typeMembership: ["SPICE"],
-    tags: ["rich", "nutty"],
+    tags: ["dark", "smoky", "cocoa", "rich", "caramel"],
   },
   {
     name: "フレンチロースト",
     typeMembership: ["SPICE"],
-    tags: ["rich", "nutty"],
+    tags: ["dark", "smoky", "rich", "caramel", "cocoa"],
   },
 ];
+
 
 // ========== 優先順位定義 ==========
 export const BEAN_PRIORITY: Record<TypeId, string[]> = {
@@ -163,12 +171,14 @@ export const BEAN_PRIORITY: Record<TypeId, string[]> = {
     "ライトノートブレンド",
   ],
   SPICE: [
-    "スマトラ",
-    "コモドドラゴンブレンド",
-    "フレンチロースト",
-    "イタリアンロースト",
-    "エスプレッソロースト",
-  ],
+  "スマトラ",
+  "コモドドラゴンブレンド",
+  "カフェベロナ",
+  "フレンチロースト",
+  "イタリアンロースト",
+  "エスプレッソロースト",
+],
+
 };
 
 // ========== 質問定義 ==========
@@ -186,34 +196,35 @@ export interface QuestionSpec {
 
 // Route A（上級者向け）
 export const ROUTE_A_QUESTIONS: QuestionSpec[] = [
+  // ---- タイプ基礎（序盤：離脱しない） ----
   {
     id: "A-1",
     q: "コーヒーを飲む時間帯で一番多いのは？",
     options: [
-      { t: "朝", type: "MOOD" },
-      { t: "昼", type: "BALANCE" },
-      { t: "夜", type: "AROMA" },
-      { t: "時間は決まっていない", type: "MOOD" },
+      { t: "朝", type: "MOOD", tag: "refresh" },
+      { t: "昼", type: "BALANCE", tag: "balance" },
+      { t: "夜", type: "AROMA", tag: "calm" },
+      { t: "時間は決まっていない", type: "MOOD", tag: "light" },
     ],
   },
   {
     id: "A-2",
     q: "スタバで注文するとき、近いのは？",
     options: [
-      { t: "だいたいいつも同じ", type: "BALANCE" },
-      { t: "気分で変える", type: "MOOD" },
-      { t: "限定があればそれ", type: "SPICE" },
-      { t: "そのとき一番気になるもの", type: "SPICE" },
+      { t: "だいたいいつも同じ", type: "BALANCE", tag: "balance" },
+      { t: "気分で変える", type: "MOOD", tag: "light" },
+      { t: "限定があればそれ", type: "SPICE", tag: "rich" },
+      { t: "そのとき一番気になるもの", type: "AROMA", tag: "aroma" },
     ],
   },
   {
     id: "A-3",
     q: "自宅でコーヒーを飲むときは？",
     options: [
-      { t: "ブラックが多い", type: "AROMA" },
-      { t: "ミルクを入れることが多い", type: "BALANCE" },
-      { t: "気分で変える", type: "MOOD" },
-      { t: "自宅ではあまり飲まない", type: "MOOD" },
+      { t: "ブラックが多い", type: "AROMA", tag: "aroma" },
+      { t: "ミルクを入れることが多い", type: "BALANCE", tag: "calm" },
+      { t: "気分で変える", type: "MOOD", tag: "light" },
+      { t: "自宅ではあまり飲まない", type: "MOOD", tag: "refresh" },
     ],
   },
   {
@@ -226,148 +237,230 @@ export const ROUTE_A_QUESTIONS: QuestionSpec[] = [
       { t: "印象に残る味", type: "SPICE", tag: "rich" },
     ],
   },
+
+  // ---- 具体質問（豆精度：フード/甘味/香り） ----
   {
     id: "A-5",
-    q: "「飲みやすいコーヒー」と聞いて思い浮かぶのは？",
+    q: "この中で好きな焼き菓子は？",
     options: [
-      { t: "バランスがいい", type: "BALANCE" },
-      { t: "苦くない", type: "MOOD" },
-      { t: "クセがない", type: "BALANCE" },
-      { t: "香りがやさしい", type: "AROMA" },
+      { t: "シュガードーナツ", type: "MOOD", tag: "sweet" },
+      { t: "チョコレートチャンクスコーン", type: "SPICE", tag: "cocoa" },
+      { t: "アメリカンワッフル", type: "BALANCE", tag: "nutty" },
+      { t: "シナモンロール", type: "SPICE", tag: "spice" },
     ],
   },
   {
     id: "A-6",
-    q: "フードと一緒に飲むなら？",
+    q: "この中で好きなケーキは？",
     options: [
-      { t: "甘いもの（チョコ・ケーキ）", type: "AROMA", tag: "nutty" },
-      { t: "パン・軽食", type: "BALANCE", tag: "balance" },
-      { t: "食事のあと", type: "BALANCE", tag: "rich" },
-      { t: "単体で楽しむ", type: "AROMA", tag: "aroma" },
+      { t: "ニューヨークチーズケーキ", type: "BALANCE", tag: "nutty" },
+      { t: "チョコレートタルト", type: "SPICE", tag: "cocoa" },
+      { t: "オレンジケーキ", type: "AROMA", tag: "citrus" },
+      { t: "抹茶のロールケーキ", type: "AROMA", tag: "herbal" },
     ],
   },
   {
     id: "A-7",
-    q: "新しい豆を試すときの気持ちは？",
+    q: "この中で好きなケーキは？②",
     options: [
-      { t: "ワクワクする", type: "SPICE" },
-      { t: "少し慎重", type: "BALANCE" },
-      { t: "失敗したくない", type: "BALANCE" },
-      { t: "そのとき次第", type: "MOOD" },
+      { t: "ピーチ＆ミルクケーキ", type: "MOOD", tag: "sweet" },
+      { t: "抹茶ティラミス", type: "AROMA", tag: "herbal" },
+      { t: "ホワイトモカケーキ", type: "MOOD", tag: "caramel" },
+      { t: "手しぼり栗のモンブラン", type: "BALANCE", tag: "nutty" },
     ],
   },
   {
     id: "A-8",
-    q: "コーヒーの香りについては？",
+    q: "この中で好きな石窯フィローネは？",
     options: [
-      { t: "とても大事", type: "AROMA", tag: "aroma" },
-      { t: "あったら嬉しい", type: "AROMA", tag: "aroma" },
-      { t: "そこまで気にしない", type: "BALANCE", tag: "balance" },
-      { t: "味のほうが大事", type: "SPICE", tag: "rich" },
+      { t: "ハム＆マリボーチーズの石窯フィローネ", type: "BALANCE", tag: "balance" },
+      { t: "ヴィーナソーセージ石窯フィローネ", type: "SPICE", tag: "rich" },
+      { t: "キーマカレー石窯フィローネ", type: "SPICE", tag: "spice" },
+      { t: "バジルチキン＆トマトモッツァレラ石窯フィローネ", type: "AROMA", tag: "refresh" },
     ],
   },
   {
     id: "A-9",
-    q: "スタバに行く頻度は？",
+    q: "この中で好きなフラペチーノは？",
     options: [
-      { t: "週に何度も", type: "BALANCE" },
-      { t: "週1くらい", type: "BALANCE" },
-      { t: "月に数回", type: "MOOD" },
-      { t: "ほとんど行かない", type: "MOOD" },
+      { t: "ダークモカフラペチーノ", type: "SPICE", tag: "cocoa" },
+      { t: "抹茶クリームフラペチーノ", type: "AROMA", tag: "herbal" },
+      { t: "キャラメルフラペチーノ", type: "MOOD", tag: "caramel" },
+      { t: "コーヒーフラペチーノ", type: "BALANCE", tag: "balance" },
     ],
   },
   {
     id: "A-10",
+    q: "この中で好きなフルーツは？",
+    options: [
+      { t: "イチゴ", type: "AROMA", tag: "berry" },
+      { t: "バナナ", type: "BALANCE", tag: "calm" },
+      { t: "ピーチ", type: "MOOD", tag: "fruity" },
+      { t: "オレンジ", type: "AROMA", tag: "citrus" },
+    ],
+  },
+
+  // ---- 味の方向（飲み慣れ向けの好み分解） ----
+  {
+    id: "A-11",
     q: "苦味の強いコーヒーは？",
     options: [
-      { t: "好き", type: "SPICE", tag: "rich" },
+      { t: "好き", type: "SPICE", tag: "dark" },
       { t: "どちらかといえば好き", type: "SPICE", tag: "rich" },
       { t: "あまり得意ではない", type: "MOOD", tag: "light" },
       { t: "苦手", type: "MOOD", tag: "light" },
     ],
   },
   {
-    id: "A-11",
+    id: "A-12",
     q: "酸味のあるコーヒーは？",
     options: [
       { t: "好き", type: "AROMA", tag: "fruity" },
-      { t: "気分次第", type: "MOOD", tag: "fruity" },
+      { t: "気分次第", type: "MOOD", tag: "citrus" },
       { t: "少し苦手", type: "BALANCE", tag: "balance" },
-      { t: "できれば避けたい", type: "BALANCE", tag: "balance" },
-    ],
-  },
-  {
-    id: "A-12",
-    q: "コーヒーを飲むシーンで多いのは？",
-    options: [
-      { t: "作業・勉強中", type: "MOOD" },
-      { t: "リラックスタイム", type: "AROMA" },
-      { t: "移動中・外出先", type: "BALANCE" },
-      { t: "特に決まっていない", type: "MOOD" },
+      { t: "できれば避けたい", type: "BALANCE", tag: "calm" },
     ],
   },
   {
     id: "A-13",
-    q: "同じ豆をリピートすることは？",
+    q: "香りのある飲み物は？",
     options: [
-      { t: "よくある", type: "BALANCE" },
-      { t: "たまにある", type: "BALANCE" },
-      { t: "あまりない", type: "SPICE" },
-      { t: "ほとんどしない", type: "SPICE" },
+      { t: "香りが命だと思う", type: "AROMA", tag: "aroma" },
+      { t: "香りがいいと嬉しい", type: "AROMA", tag: "floral" },
+      { t: "そこまで気にしない", type: "BALANCE", tag: "balance" },
+      { t: "香りより味のインパクト", type: "SPICE", tag: "rich" },
     ],
   },
   {
     id: "A-14",
-    q: "「コーヒーらしい味」と聞いて近いのは？",
+    q: "好きな“甘さ”はどれに近い？",
     options: [
-      { t: "しっかりした苦味", type: "SPICE" },
-      { t: "香ばしさ", type: "BALANCE" },
-      { t: "バランス", type: "BALANCE" },
-      { t: "よく分からない", type: "MOOD" },
+      { t: "控えめが好き", type: "BALANCE", tag: "calm" },
+      { t: "ちょっと甘いのが好き", type: "MOOD", tag: "sweet" },
+      { t: "キャラメルっぽい甘さが好き", type: "MOOD", tag: "caramel" },
+      { t: "甘さよりビター", type: "SPICE", tag: "dark" },
     ],
   },
   {
     id: "A-15",
-    q: "深煎りのコーヒーについて",
+    q: "コーヒーの後味は？",
     options: [
-      { t: "好き", type: "SPICE" },
-      { t: "気分で飲む", type: "MOOD" },
-      { t: "あまり飲まない", type: "BALANCE" },
-      { t: "苦手", type: "MOOD" },
+      { t: "すっきりキレる", type: "MOOD", tag: "refresh" },
+      { t: "ほどよく残る", type: "BALANCE", tag: "balance" },
+      { t: "香りの余韻が残る", type: "AROMA", tag: "aroma" },
+      { t: "重い余韻が好き", type: "SPICE", tag: "rich" },
     ],
   },
+
+  // ---- 具体質問②（豆の差が出る） ----
   {
     id: "A-16",
-    q: "浅めのコーヒーについて",
+    q: "この中で惹かれる香りは？",
     options: [
-      { t: "好き", type: "AROMA" },
-      { t: "たまに飲む", type: "MOOD" },
-      { t: "あまり飲まない", type: "BALANCE" },
-      { t: "苦手", type: "SPICE" },
+      { t: "チョコ・ココア", type: "SPICE", tag: "cocoa" },
+      { t: "キャラメル", type: "MOOD", tag: "caramel" },
+      { t: "柑橘（オレンジ系）", type: "AROMA", tag: "citrus" },
+      { t: "ハーブ/抹茶っぽい", type: "AROMA", tag: "herbal" },
     ],
   },
   {
     id: "A-17",
-    q: "コーヒーを選ぶとき重視するのは？",
+    q: "この中ならどんな気分の一杯がいい？",
     options: [
-      { t: "味の安定感", type: "BALANCE", tag: "balance" },
-      { t: "その日の気分", type: "MOOD", tag: "light" },
-      { t: "香り", type: "AROMA", tag: "aroma" },
-      { t: "個性・特徴", type: "SPICE", tag: "rich" },
+      { t: "落ち着きたい", type: "BALANCE", tag: "calm" },
+      { t: "気分転換したい", type: "MOOD", tag: "refresh" },
+      { t: "香りに癒されたい", type: "AROMA", tag: "aroma" },
+      { t: "ガツンといきたい", type: "SPICE", tag: "rich" },
     ],
   },
   {
     id: "A-18",
-    q: "「これは自分向きだな」と感じる瞬間は？",
+    q: "この中で好きな“印象”は？",
     options: [
-      { t: "落ち着く", type: "BALANCE" },
-      { t: "気分が上がる", type: "MOOD" },
-      { t: "香りに癒される", type: "AROMA" },
-      { t: "印象に残る", type: "SPICE" },
+      { t: "やさしい・丸い", type: "BALANCE", tag: "calm" },
+      { t: "軽い・飲みやすい", type: "MOOD", tag: "light" },
+      { t: "華やか・フルーティ", type: "AROMA", tag: "fruity" },
+      { t: "濃い・ビター", type: "SPICE", tag: "dark" },
+    ],
+  },
+
+  // ---- ブレ防止（似たことを別角度で） ----
+  {
+    id: "A-19",
+    q: "スタバでドリンクを選ぶ基準は？",
+    options: [
+      { t: "迷ったら定番", type: "BALANCE", tag: "balance" },
+      { t: "その日の気分優先", type: "MOOD", tag: "light" },
+      { t: "香りや余韻の説明を見る", type: "AROMA", tag: "aroma" },
+      { t: "濃さ・インパクト優先", type: "SPICE", tag: "rich" },
     ],
   },
   {
-    id: "A-19",
+    id: "A-20",
+    q: "深煎りのコーヒーについて",
+    options: [
+      { t: "大好き", type: "SPICE", tag: "dark" },
+      { t: "気分で飲む", type: "MOOD", tag: "rich" },
+      { t: "あまり飲まない", type: "BALANCE", tag: "balance" },
+      { t: "苦手", type: "AROMA", tag: "light" },
+    ],
+  },
+  {
+    id: "A-21",
+    q: "浅め（軽やか）なコーヒーについて",
+    options: [
+      { t: "大好き", type: "AROMA", tag: "light" },
+      { t: "たまに飲む", type: "MOOD", tag: "refresh" },
+      { t: "あまり飲まない", type: "BALANCE", tag: "balance" },
+      { t: "物足りない", type: "SPICE", tag: "rich" },
+    ],
+  },
+  {
+    id: "A-22",
+    q: "新しいメニューを見ると？",
+    options: [
+      { t: "まずは定番で安心", type: "BALANCE", tag: "calm" },
+      { t: "気分に合えば挑戦", type: "MOOD", tag: "refresh" },
+      { t: "香りが面白そうなら即", type: "AROMA", tag: "aroma" },
+      { t: "クセ強そうなら即", type: "SPICE", tag: "rich" },
+    ],
+  },
+
+  // ---- 具体質問③（甘/香/食事の分岐を強める） ----
+  {
+    id: "A-23",
+    q: "この中でコーヒーと一緒に食べたいのは？",
+    options: [
+      { t: "チョコ系スイーツ", type: "SPICE", tag: "cocoa" },
+      { t: "チーズ系スイーツ", type: "BALANCE", tag: "nutty" },
+      { t: "フルーツ系スイーツ", type: "AROMA", tag: "fruity" },
+      { t: "甘めのドーナツ系", type: "MOOD", tag: "sweet" },
+    ],
+  },
+  {
+    id: "A-24",
+    q: "食事のあとに飲むならどれがいい？",
+    options: [
+      { t: "すっきりして口直し", type: "MOOD", tag: "refresh" },
+      { t: "落ち着く定番", type: "BALANCE", tag: "calm" },
+      { t: "香りで余韻を楽しむ", type: "AROMA", tag: "aroma" },
+      { t: "濃くて満足感", type: "SPICE", tag: "rich" },
+    ],
+  },
+
+  // ---- タイプ締め（後半：納得感を作る） ----
+  {
+    id: "A-25",
+    q: "同じ豆をリピートすることは？",
+    options: [
+      { t: "よくある", type: "BALANCE", tag: "balance" },
+      { t: "たまにある", type: "BALANCE", tag: "calm" },
+      { t: "あまりない", type: "MOOD", tag: "light" },
+      { t: "ほとんどしない", type: "SPICE", tag: "rich" },
+    ],
+  },
+  {
+    id: "A-26",
     q: "コーヒーを飲んだあとに欲しい感覚は？",
     options: [
       { t: "ほっとする", type: "BALANCE", tag: "calm" },
@@ -377,19 +470,53 @@ export const ROUTE_A_QUESTIONS: QuestionSpec[] = [
     ],
   },
   {
-    id: "A-20",
-    q: "今の自分に一番近いのは？",
+    id: "A-27",
+    q: "あなたの“コーヒー観”に近いのは？",
     options: [
-      { t: "安心できる一杯がいい", type: "BALANCE" },
-      { t: "気分で選びたい", type: "MOOD" },
-      { t: "香りを楽しみたい", type: "AROMA" },
-      { t: "少しクセが欲しい", type: "SPICE" },
+      { t: "生活の一部（安定）", type: "BALANCE", tag: "balance" },
+      { t: "気分を変えるスイッチ", type: "MOOD", tag: "refresh" },
+      { t: "香りを楽しむ時間", type: "AROMA", tag: "aroma" },
+      { t: "自分に刺さる体験", type: "SPICE", tag: "rich" },
+    ],
+  },
+  {
+    id: "A-28",
+    q: "“惹かれる説明文”はどれ？",
+    options: [
+      { t: "なめらか・やさしい", type: "BALANCE", tag: "calm" },
+      { t: "軽やか・すっきり", type: "MOOD", tag: "light" },
+      { t: "華やか・果実感", type: "AROMA", tag: "fruity" },
+      { t: "濃厚・スモーキー", type: "SPICE", tag: "smoky" },
+    ],
+  },
+  {
+    id: "A-29",
+    q: "いま一番大事にしたいのは？",
+    options: [
+      { t: "ちょうどよさ", type: "BALANCE", tag: "balance" },
+      { t: "すっきり感", type: "MOOD", tag: "refresh" },
+      { t: "香り", type: "AROMA", tag: "aroma" },
+      { t: "濃さ・個性", type: "SPICE", tag: "rich" },
+    ],
+  },
+
+  // ---- タイブレーク（最終問） ----
+  {
+    id: "A-30",
+    q: "今のあなたに一番近いのは？",
+    options: [
+      { t: "安心できる一杯がいい", type: "BALANCE", tag: "calm" },
+      { t: "気分で選びたい", type: "MOOD", tag: "light" },
+      { t: "香りを楽しみたい", type: "AROMA", tag: "aroma" },
+      { t: "少しクセが欲しい", type: "SPICE", tag: "rich" },
     ],
   },
 ];
 
+
 // Route B（初心者向け）
 export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
+  // ---- タイプ基礎（序盤） ----
   {
     id: "B-1",
     q: "飲み物を選ぶとき、近いのは？",
@@ -404,84 +531,230 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     id: "B-2",
     q: "カフェで過ごすなら？",
     options: [
-      { t: "落ち着いてゆっくり", type: "AROMA" },
-      { t: "気分転換", type: "MOOD" },
-      { t: "作業・勉強", type: "MOOD" },
-      { t: "友達とワイワイ", type: "SPICE" },
+      { t: "落ち着いてゆっくり", type: "BALANCE", tag: "calm" },
+      { t: "気分転換", type: "MOOD", tag: "refresh" },
+      { t: "香りのある時間", type: "AROMA", tag: "aroma" },
+      { t: "ワイワイ楽しく", type: "SPICE", tag: "rich" },
     ],
   },
+
+  // ---- 具体質問（早めに入れて答えやすく） ----
   {
     id: "B-3",
-    q: "甘いものは？",
+    q: "この中で好きな焼き菓子は？",
     options: [
-      { t: "大好き", type: "AROMA" },
-      { t: "ほどほど", type: "BALANCE" },
-      { t: "たまに", type: "MOOD" },
-      { t: "あまり食べない", type: "SPICE" },
+      { t: "シュガードーナツ", type: "MOOD", tag: "sweet" },
+      { t: "チョコレートチャンクスコーン", type: "SPICE", tag: "cocoa" },
+      { t: "アメリカンワッフル", type: "BALANCE", tag: "nutty" },
+      { t: "シナモンロール", type: "SPICE", tag: "spice" },
     ],
   },
   {
     id: "B-4",
-    q: "新しいものに出会うと？",
+    q: "この中で好きなケーキは？",
     options: [
-      { t: "ワクワクする", type: "SPICE" },
-      { t: "少し様子を見る", type: "BALANCE" },
-      { t: "人のおすすめ次第", type: "BALANCE" },
-      { t: "あまり選ばない", type: "BALANCE" },
+      { t: "ニューヨークチーズケーキ", type: "BALANCE", tag: "nutty" },
+      { t: "チョコレートタルト", type: "SPICE", tag: "cocoa" },
+      { t: "オレンジケーキ", type: "AROMA", tag: "citrus" },
+      { t: "抹茶のロールケーキ", type: "AROMA", tag: "herbal" },
     ],
   },
   {
     id: "B-5",
-    q: "どんな時間にコーヒーを飲みたい？",
+    q: "この中で好きなフラペチーノは？",
     options: [
-      { t: "朝", type: "MOOD" },
-      { t: "昼", type: "BALANCE" },
-      { t: "夜", type: "AROMA" },
-      { t: "まだ決まっていない", type: "MOOD" },
+      { t: "ダークモカフラペチーノ", type: "SPICE", tag: "cocoa" },
+      { t: "抹茶クリームフラペチーノ", type: "AROMA", tag: "herbal" },
+      { t: "キャラメルフラペチーノ", type: "MOOD", tag: "caramel" },
+      { t: "コーヒーフラペチーノ", type: "BALANCE", tag: "balance" },
     ],
   },
   {
     id: "B-6",
+    q: "この中で好きなフルーツは？",
+    options: [
+      { t: "イチゴ", type: "AROMA", tag: "berry" },
+      { t: "バナナ", type: "BALANCE", tag: "calm" },
+      { t: "ピーチ", type: "MOOD", tag: "fruity" },
+      { t: "オレンジ", type: "AROMA", tag: "citrus" },
+    ],
+  },
+
+  // ---- 初心者向けの味の自己申告（やさしく） ----
+  {
+    id: "B-7",
+    q: "苦い味について",
+    options: [
+      { t: "好き", type: "SPICE", tag: "dark" },
+      { t: "少しなら", type: "BALANCE", tag: "balance" },
+      { t: "苦手", type: "MOOD", tag: "light" },
+      { t: "できれば避けたい", type: "MOOD", tag: "light" },
+    ],
+  },
+  {
+    id: "B-8",
+    q: "フルーティな味の印象は？",
+    options: [
+      { t: "好き", type: "AROMA", tag: "fruity" },
+      { t: "興味がある", type: "AROMA", tag: "citrus" },
+      { t: "よく分からない", type: "BALANCE", tag: "balance" },
+      { t: "あまり惹かれない", type: "SPICE", tag: "rich" },
+    ],
+  },
+
+  // ---- 具体質問②（食事系でrich/spiceを拾う） ----
+  {
+    id: "B-9",
+    q: "この中で好きな石窯フィローネは？",
+    options: [
+      { t: "ハム＆マリボーチーズの石窯フィローネ", type: "BALANCE", tag: "balance" },
+      { t: "ヴィーナソーセージ石窯フィローネ", type: "SPICE", tag: "rich" },
+      { t: "キーマカレー石窯フィローネ", type: "SPICE", tag: "spice" },
+      { t: "バジルチキン＆トマトモッツァレラ石窯フィローネ", type: "AROMA", tag: "refresh" },
+    ],
+  },
+  {
+    id: "B-10",
+    q: "甘いものは？",
+    options: [
+      { t: "大好き", type: "MOOD", tag: "sweet" },
+      { t: "ほどほど", type: "BALANCE", tag: "balance" },
+      { t: "たまに", type: "AROMA", tag: "light" },
+      { t: "あまり食べない", type: "SPICE", tag: "dark" },
+    ],
+  },
+
+  // ---- ブレ防止（別角度） ----
+  {
+    id: "B-11",
     q: "香りのあるものは？",
     options: [
       { t: "とても好き", type: "AROMA", tag: "aroma" },
-      { t: "好き", type: "AROMA", tag: "aroma" },
+      { t: "好き", type: "AROMA", tag: "floral" },
       { t: "あまり気にしない", type: "BALANCE", tag: "balance" },
       { t: "苦手", type: "MOOD", tag: "light" },
     ],
   },
   {
-    id: "B-7",
+    id: "B-12",
     q: "気分転換したいときは？",
     options: [
-      { t: "甘いもの", type: "AROMA" },
-      { t: "散歩", type: "MOOD" },
-      { t: "音楽", type: "AROMA" },
-      { t: "何か飲む", type: "BALANCE" },
+      { t: "甘いもの", type: "MOOD", tag: "sweet" },
+      { t: "散歩", type: "MOOD", tag: "refresh" },
+      { t: "音楽", type: "AROMA", tag: "calm" },
+      { t: "何か飲む", type: "BALANCE", tag: "balance" },
     ],
   },
   {
-    id: "B-8",
+    id: "B-13",
     q: "落ち着く場所は？",
     options: [
-      { t: "家", type: "BALANCE" },
-      { t: "カフェ", type: "AROMA" },
-      { t: "自然", type: "AROMA" },
-      { t: "特にない", type: "MOOD" },
+      { t: "家", type: "BALANCE", tag: "calm" },
+      { t: "カフェ", type: "AROMA", tag: "aroma" },
+      { t: "自然", type: "AROMA", tag: "refresh" },
+      { t: "特にない", type: "MOOD", tag: "light" },
+    ],
+  },
+
+  // ---- 具体質問③（香り/甘み/ビターの方向） ----
+  {
+    id: "B-14",
+    q: "この中で惹かれる香りは？",
+    options: [
+      { t: "チョコ・ココア", type: "SPICE", tag: "cocoa" },
+      { t: "キャラメル", type: "MOOD", tag: "caramel" },
+      { t: "柑橘（オレンジ系）", type: "AROMA", tag: "citrus" },
+      { t: "ハーブ/抹茶っぽい", type: "AROMA", tag: "herbal" },
     ],
   },
   {
-    id: "B-9",
+    id: "B-15",
+    q: "好きな“甘さ”はどれに近い？",
+    options: [
+      { t: "控えめが好き", type: "BALANCE", tag: "calm" },
+      { t: "ちょっと甘いのが好き", type: "MOOD", tag: "sweet" },
+      { t: "キャラメルっぽい甘さが好き", type: "MOOD", tag: "caramel" },
+      { t: "甘さよりビター", type: "SPICE", tag: "dark" },
+    ],
+  },
+
+  // ---- タイプを固める（中盤〜後半） ----
+  {
+    id: "B-16",
+    q: "どんな時間にコーヒーを飲みたい？",
+    options: [
+      { t: "朝", type: "MOOD", tag: "refresh" },
+      { t: "昼", type: "BALANCE", tag: "balance" },
+      { t: "夜", type: "AROMA", tag: "calm" },
+      { t: "まだ決まっていない", type: "MOOD", tag: "light" },
+    ],
+  },
+  {
+    id: "B-17",
+    q: "新しいものに出会うと？",
+    options: [
+      { t: "ワクワクする", type: "SPICE", tag: "rich" },
+      { t: "少し様子を見る", type: "BALANCE", tag: "balance" },
+      { t: "人のおすすめ次第", type: "BALANCE", tag: "calm" },
+      { t: "あまり選ばない", type: "MOOD", tag: "light" },
+    ],
+  },
+  {
+    id: "B-18",
+    q: "休日はどちら派？",
+    options: [
+      { t: "のんびり", type: "BALANCE", tag: "calm" },
+      { t: "予定ぎっしり", type: "SPICE", tag: "rich" },
+      { t: "気分次第", type: "MOOD", tag: "light" },
+      { t: "まだ決めない", type: "MOOD", tag: "balance" },
+    ],
+  },
+  {
+    id: "B-19",
+    q: "選択肢が多いときは？",
+    options: [
+      { t: "じっくり選ぶ", type: "BALANCE", tag: "balance" },
+      { t: "直感", type: "MOOD", tag: "light" },
+      { t: "人に任せる", type: "BALANCE", tag: "calm" },
+      { t: "迷ってしまう", type: "AROMA", tag: "aroma" },
+    ],
+  },
+
+  // ---- 具体質問④（最後に豆差をもう一回） ----
+  {
+    id: "B-20",
+    q: "この中でコーヒーと一緒に食べたいのは？",
+    options: [
+      { t: "チョコ系スイーツ", type: "SPICE", tag: "cocoa" },
+      { t: "チーズ系スイーツ", type: "BALANCE", tag: "nutty" },
+      { t: "フルーツ系スイーツ", type: "AROMA", tag: "fruity" },
+      { t: "甘めのドーナツ系", type: "MOOD", tag: "sweet" },
+    ],
+  },
+  {
+    id: "B-21",
+    q: "食事のあとに飲むならどれがいい？",
+    options: [
+      { t: "すっきりして口直し", type: "MOOD", tag: "refresh" },
+      { t: "落ち着く定番", type: "BALANCE", tag: "calm" },
+      { t: "香りで余韻を楽しむ", type: "AROMA", tag: "aroma" },
+      { t: "濃くて満足感", type: "SPICE", tag: "rich" },
+    ],
+  },
+
+  // ---- 最終調整（タイプ・納得感） ----
+  {
+    id: "B-22",
     q: "「大人っぽい」と感じるのは？",
     options: [
-      { t: "落ち着いた空間", type: "BALANCE" },
-      { t: "静かな時間", type: "AROMA" },
-      { t: "香りのあるもの", type: "AROMA" },
-      { t: "ちょっとクセのあるもの", type: "SPICE" },
+      { t: "落ち着いた空間", type: "BALANCE", tag: "calm" },
+      { t: "静かな時間", type: "AROMA", tag: "aroma" },
+      { t: "香りのあるもの", type: "AROMA", tag: "floral" },
+      { t: "ちょっとクセのあるもの", type: "SPICE", tag: "rich" },
     ],
   },
   {
-    id: "B-10",
+    id: "B-23",
     q: "飲み物に求めるのは？",
     options: [
       { t: "飲みやすさ", type: "BALANCE", tag: "balance" },
@@ -491,57 +764,27 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     ],
   },
   {
-    id: "B-11",
+    id: "B-24",
     q: "朝の過ごし方は？",
     options: [
-      { t: "ゆっくり", type: "AROMA" },
-      { t: "バタバタ", type: "MOOD" },
-      { t: "その日次第", type: "MOOD" },
-      { t: "朝は苦手", type: "BALANCE" },
+      { t: "ゆっくり", type: "BALANCE", tag: "calm" },
+      { t: "バタバタ", type: "MOOD", tag: "refresh" },
+      { t: "その日次第", type: "MOOD", tag: "light" },
+      { t: "朝は苦手", type: "AROMA", tag: "calm" },
     ],
   },
   {
-    id: "B-12",
-    q: "苦い味について",
+    id: "B-25",
+    q: "初めてのことに挑戦するときは？",
     options: [
-      { t: "好き", type: "SPICE", tag: "rich" },
-      { t: "少しなら", type: "BALANCE", tag: "balance" },
-      { t: "苦手", type: "MOOD", tag: "light" },
-      { t: "できれば避けたい", type: "MOOD", tag: "light" },
+      { t: "ワクワク", type: "SPICE", tag: "rich" },
+      { t: "少し不安", type: "BALANCE", tag: "calm" },
+      { t: "誰かと一緒なら", type: "BALANCE", tag: "balance" },
+      { t: "あまりしない", type: "MOOD", tag: "light" },
     ],
   },
   {
-    id: "B-13",
-    q: "フルーティな味の印象は？",
-    options: [
-      { t: "好き", type: "AROMA", tag: "fruity" },
-      { t: "興味がある", type: "AROMA", tag: "fruity" },
-      { t: "よく分からない", type: "BALANCE", tag: "balance" },
-      { t: "あまり惹かれない", type: "SPICE", tag: "rich" },
-    ],
-  },
-  {
-    id: "B-14",
-    q: "休日はどちら派？",
-    options: [
-      { t: "のんびり", type: "BALANCE" },
-      { t: "予定ぎっしり", type: "SPICE" },
-      { t: "気分次第", type: "MOOD" },
-      { t: "まだ決めない", type: "MOOD" },
-    ],
-  },
-  {
-    id: "B-15",
-    q: "選択肢が多いときは？",
-    options: [
-      { t: "じっくり選ぶ", type: "BALANCE" },
-      { t: "直感", type: "MOOD" },
-      { t: "人に任せる", type: "BALANCE" },
-      { t: "迷ってしまう", type: "AROMA" },
-    ],
-  },
-  {
-    id: "B-16",
+    id: "B-26",
     q: "コーヒーを飲むなら、どんな気分で？",
     options: [
       { t: "落ち着きたい", type: "BALANCE", tag: "calm" },
@@ -551,37 +794,39 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     ],
   },
   {
-    id: "B-17",
+    id: "B-27",
     q: "季節で惹かれるのは？",
     options: [
-      { t: "春", type: "AROMA" },
-      { t: "夏", type: "MOOD" },
-      { t: "秋", type: "BALANCE" },
-      { t: "冬", type: "SPICE" },
+      { t: "春", type: "AROMA", tag: "floral" },
+      { t: "夏", type: "MOOD", tag: "refresh" },
+      { t: "秋", type: "BALANCE", tag: "nutty" },
+      { t: "冬", type: "SPICE", tag: "dark" },
     ],
   },
   {
-    id: "B-18",
+    id: "B-28",
     q: "「これは自分らしい」と思うのは？",
     options: [
-      { t: "安心感", type: "BALANCE" },
-      { t: "気分", type: "MOOD" },
-      { t: "雰囲気", type: "AROMA" },
-      { t: "個性", type: "SPICE" },
+      { t: "安心感", type: "BALANCE", tag: "balance" },
+      { t: "気分", type: "MOOD", tag: "light" },
+      { t: "雰囲気", type: "AROMA", tag: "aroma" },
+      { t: "個性", type: "SPICE", tag: "rich" },
     ],
   },
   {
-    id: "B-19",
-    q: "初めてのことに挑戦するときは？",
+    id: "B-29",
+    q: "いま一番大事にしたいのは？",
     options: [
-      { t: "ワクワク", type: "SPICE" },
-      { t: "少し不安", type: "BALANCE" },
-      { t: "誰かと一緒なら", type: "BALANCE" },
-      { t: "あまりしない", type: "BALANCE" },
+      { t: "ちょうどよさ", type: "BALANCE", tag: "balance" },
+      { t: "すっきり感", type: "MOOD", tag: "refresh" },
+      { t: "香り", type: "AROMA", tag: "aroma" },
+      { t: "濃さ・個性", type: "SPICE", tag: "rich" },
     ],
   },
+
+  // ---- タイブレーク（最終問） ----
   {
-    id: "B-20",
+    id: "B-30",
     q: "今のあなたに一番近いのは？",
     options: [
       { t: "ちょうどいいが好き", type: "BALANCE", tag: "balance" },
@@ -591,6 +836,7 @@ export const ROUTE_B_QUESTIONS: QuestionSpec[] = [
     ],
   },
 ];
+
 
 // ========== Q0（ルート分岐）==========
 export interface Q0Spec {
