@@ -10,6 +10,7 @@ export type BeanDetail = {
   roast: number;
   acidity: number;
   body: number;
+  brewMethods: string[];
   recommended: {
     brewMethodTitle: string;
     brewMethodLines: string[];
@@ -19,29 +20,22 @@ export type BeanDetail = {
   };
 };
 
-
 export const BEAN_DETAILS: Record<string, BeanDetail> = {
   "lightnote": {
     id: "lightnote",
     photoFile: "lightnote-blend.jpg",
     logoFile: "lightnote-blend-logo.jpg",
     threeLetterCode: "LNB",
-    description:
-      "ミルクチョコレートのような風味、モルトを思わせる香ばしさと甘みが特徴の穏やかな味わいのコーヒーです。創業当初から私たちと深いつながりをもつラテンアメリカ産のコーヒーを、軽めの焙煎で仕上げました。",
+    description: "ミルクチョコレートのような風味、モルトを思わせる香ばしさと甘みが特徴の穏やかな味わいのコーヒーです。創業当初から私たちと深いつながりをもつラテンアメリカ産のコーヒーを、軽めの焙煎で仕上げました。",
     keyword: "軽めのコクとミルクチョコレートのような風味",
     roast: 1,
     acidity: 4,
     body: 1,
+    brewMethods: ["ペーパードリップ", "コールドブリュー"],
     recommended: {
       brewMethodTitle: "ペーパードリップ",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "湯温：92〜96℃",
-      ],
-      tipsText: [
-        "浅煎りの豆は成分が溶け出しにくいため、やや高めの湯温で、最初にしっかり蒸らすことが重要。",
-        "注湯は一気に行わず、数回に分けてゆっくり注ぐことで、味の薄さや未抽出を防ぐことができる。",
-      ],
+      brewMethodLines: ["挽き目：中挽き", "湯温：92〜96℃"],
+      tipsText: ["浅煎りの豆は成分が溶け出しにくいため、やや高めの湯温で、最初にしっかり蒸らすことが重要。", "注湯は一気に行わず、数回に分けてゆっくり注ぐことで、味の薄さや未抽出を防ぐことができる。"],
       bestTimes: ["朝〜午前中", "勉強・作業前"],
       foodPairing: ["ミルクチョコレート", "煎ったナッツ"],
     },
@@ -51,23 +45,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "blonde-espresso-roast.jpg",
     logoFile: "blonde-espresso-roast-logo.jpg",
     threeLetterCode: "BEB",
-    description:
-      "軽やかな口あたりが特徴の、ミルクとの美しい調和を生み出す軽やかでバランスのとれた味わいのコーヒーです。エスプレッソの選択肢としてはもちろん、他の抽出器具やアイスコーヒーでもお楽しみいただけます。ミルクやその他の植物性ミルクとの相性もぴったりです。",
+    description: "軽やかな口あたりが特徴の、ミルクとの美しい調和を生み出す軽やかでバランスのとれた味わいのコーヒーです。エスプレッソの選択肢としてはもちろん、他の抽出器具やアイスコーヒーでもお楽しみいただけます。ミルクやその他の植物性ミルクとの相性もぴったりです。",
     keyword: "キャンディードアップルやチョコレートを思わせる甘みのある風味",
     roast: 1,
     acidity: 3,
     body: 2,
+    brewMethods: ["エスプレッソマシン", "ペーパードリップ"],
     recommended: {
       brewMethodTitle: "エスプレッソマシン",
-      brewMethodLines: [
-        "挽き目：細挽き",
-        "使用量：18-20g",
-        "抽出時間：25-30秒",
-      ],
-      tipsText: [
-        "ライトローストでもエスプレッソの濃厚さを楽しめます。",
-        "ミルクを加えてラテにすると、美しい調和を生み出します。",
-      ],
+      brewMethodLines: ["挽き目：細挽き", "使用量：18-20g", "抽出時間：25-30秒"],
+      tipsText: ["ライトローストでもエスプレッソの濃厚さを楽しめます。", "ミルクを加えてラテにすると、美しい調和を生み出します。"],
       bestTimes: ["朝食後", "午後のリラックスタイム", "ミルクと合わせて"],
       foodPairing: ["レモン", "オレンジ", "キャラメル"],
     },
@@ -77,22 +64,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "breakfast-blend.jpg",
     logoFile: "breakfast-blend-logo.jpg",
     threeLetterCode: "BRK",
-    description:
-      "ブラウンシュガーやオレンジを思わせる風味とすっきりとした後味、マイルドな味わいのコーヒーです。一日の始まりにふさわしい、いきいきとしたコーヒーです。",
+    description: "ブラウンシュガーやオレンジを思わせる風味とすっきりとした後味、マイルドな味わいのコーヒーです。一日の始まりにふさわしい、いきいきとしたコーヒーです。",
     keyword: "一日の始まりにふさわしいシトラスを思わせる風味",
     roast: 2,
     acidity: 5,
     body: 2,
+    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ドリップコーヒーメーカー",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "使用量：水200mlに対して豆12-15g",
-      ],
-      tipsText: [
-        "朝の定番として、毎日飲んでも飽きない味わいです。",
-        "すっきりとした後味が特徴で、朝食のお供に最適です。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：中挽き", "使用量：水200mlに対して豆12-15g"],
+      tipsText: ["朝の定番として、毎日飲んでも飽きない味わいです。", "すっきりとした後味が特徴で、朝食のお供に最適です。"],
       bestTimes: ["朝食時", "朝のミーティング前", "週末のブランチ"],
       foodPairing: ["ナッツ", "リンゴ", "ブルーベリー", "レモン"],
     },
@@ -102,23 +83,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "siren-blend.jpg",
     logoFile: "siren-blend-logo.jpg",
     threeLetterCode: "SRN",
-    description:
-      "フローラルやシトラスを思わせる風味、チョコレートの口あたりが特徴の、さわやかな味わいのコーヒー。スターバックスを象徴するサイレンの名をもつこのコーヒーは、コーヒー産業に携わるすべての女性に敬意を込めてブレンドしました。",
+    description: "フローラルやシトラスを思わせる風味、チョコレートの口あたりが特徴の、さわやかな味わいのコーヒー。スターバックスを象徴するサイレンの名をもつこのコーヒーは、コーヒー産業に携わるすべての女性に敬意を込めてブレンドしました。",
     keyword: "シトラスを感じる調和のとれた味わい",
     roast: 3,
     acidity: 4,
     body: 3,
+    brewMethods: ["ペーパードリップ", "コーヒープレス"],
     recommended: {
-      brewMethodTitle: "フレンチプレス",
-      brewMethodLines: [
-        "挽き目：粗挽き",
-        "湯温：93-96℃",
-        "抽出時間：4分",
-      ],
-      tipsText: [
-        "フレンチプレスで淹れると、豆本来のオイルと風味を楽しめます。",
-        "フローラルやシトラスの風味が引き立ちます。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：粗挽き", "湯温：93-96℃", "抽出時間：4分"],
+      tipsText: ["コーヒープレスで淹れると、豆本来のオイルと風味を楽しめます。", "フローラルやシトラスの風味が引き立ちます。"],
       bestTimes: ["いつでも", "仕事の合間", "リラックスタイム"],
       foodPairing: ["キャンディードシトラス", "チョコレート"],
     },
@@ -128,23 +102,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "kenya.jpg",
     logoFile: "kenya-logo.jpg",
     threeLetterCode: "KEN",
-    description:
-      "ジューシーな酸味とグレープフルーツやブラックカラントを思わせる風味が特徴の、エキゾチックな味わいのコーヒーです。ケニアの豊かな自然によって生み出された味わいは他に類を見ず、私たちに常に驚きを与えてくれます。",
+    description: "ジューシーな酸味とグレープフルーツやブラックカラントを思わせる風味が特徴の、エキゾチックな味わいのコーヒーです。ケニアの豊かな自然によって生み出された味わいは他に類を見ず、私たちに常に驚きを与えてくれます。",
     keyword: "グレープフルーツやブラックカラントを思わせる風味",
     roast: 3,
     acidity: 5,
     body: 3,
+    brewMethods: ["ペーパードリップ", "コールドブリュー"],
     recommended: {
-      brewMethodTitle: "ハンドドリップ（V60）",
-      brewMethodLines: [
-        "挽き目：中細挽き",
-        "湯温：90-93℃",
-        "抽出時間：3分程度",
-      ],
-      tipsText: [
-        "ジューシーな酸味を楽しむため、丁寧に淹れましょう。",
-        "グレープフルーツのような明るい風味が特徴です。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：中細挽き", "湯温：90-93℃", "抽出時間：3分程度"],
+      tipsText: ["ジューシーな酸味を楽しむため、丁寧に淹れましょう。", "グレープフルーツのような明るい風味が特徴です。"],
       bestTimes: ["午前中", "集中作業の前", "気分転換"],
       foodPairing: ["グレープフルーツ", "ベリー類", "カラント（スグリ）"],
     },
@@ -154,22 +121,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "pike-place-roast.jpg",
     logoFile: "pike-place-roast-logo.jpg",
     threeLetterCode: "EDB",
-    description:
-      "ココアやプラリネを思わせる風味、なめらかでバランスのとれた味わいのコーヒーです。1号店があるシアトルの「パイクプレイスマーケット」の名前を冠したコーヒーは、一日を通して、また毎日でもお楽しみいただきたい味わいです。",
+    description: "ココアやプラリネを思わせる風味、なめらかでバランスのとれた味わいのコーヒーです。1号店があるシアトルの「パイクプレイスマーケット」の名前を冠したコーヒーは、一日を通して、また毎日でもお楽しみいただきたい味わいです。",
     keyword: "ほのかな香ばしさとなめらかな口あたり",
     roast: 3,
     acidity: 3,
     body: 3,
+    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ドリップコーヒー",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "湯温：90-93℃",
-      ],
-      tipsText: [
-        "最もバランスが良く、誰にでも楽しめる味わいです。",
-        "一日を通して、また毎日でもお楽しみいただけます。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：中挽き", "湯温：90-93℃"],
+      tipsText: ["最もバランスが良く、誰にでも楽しめる味わいです。", "一日を通して、また毎日でもお楽しみいただけます。"],
       bestTimes: ["いつでも", "仕事中", "会議の休憩"],
       foodPairing: ["ナッツ", "チョコレート", "シナモン"],
     },
@@ -179,22 +140,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "guatemala-antigua.jpg",
     logoFile: "guatemala-antigua-logo.jpg",
     threeLetterCode: "GUA",
-    description:
-      "ココアパウダーややわらかなスパイスの上品な香りが特徴の、洗練された味わいのコーヒーです。火山に囲まれたグアテマラ アンティグア地方の農園は、すばらしいコーヒーを栽培する生産地としてよく知られています。",
+    description: "ココアパウダーややわらかなスパイスの上品な香りが特徴の、洗練された味わいのコーヒーです。火山に囲まれたグアテマラ アンティグア地方の農園は、すばらしいコーヒーを栽培する生産地としてよく知られています。",
     keyword: "ココアやスパイスを思わせる洗練された風味",
     roast: 4,
     acidity: 3,
     body: 4,
+    brewMethods: ["コーヒープレス", "ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "サイフォン",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "抽出時間：1-2分",
-      ],
-      tipsText: [
-        "サイフォンで淹れると、上品な香りが一層引き立ちます。",
-        "ココアパウダーややわらかなスパイスの風味を楽しめます。",
-      ],
+      brewMethodTitle: "コーヒープレス",
+      brewMethodLines: ["挽き目：中挽き", "抽出時間：1-2分"],
+      tipsText: ["コーヒープレスで淹れると、上品な香りが一層引き立ちます。", "ココアパウダーややわらかなスパイスの風味を楽しめます。"],
       bestTimes: ["午後", "デザートタイム", "特別な時間"],
       foodPairing: ["チョコレート", "ナッツ", "キャラメル", "リンゴ"],
     },
@@ -204,22 +159,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "house-blend.jpg",
     logoFile: "house-blend-logo.jpg",
     threeLetterCode: "HOU",
-    description:
-      "トフィーやココアを思わせる風味にほのかなローストの甘み、バランスのとれた味わい深いコーヒー。創業当時よりお届けしてきた私たちの原点と呼べるコーヒーです。",
+    description: "トフィーやココアを思わせる風味にほのかなローストの甘み、バランスのとれた味わい深いコーヒー。創業当時よりお届けしてきた私たちの原点と呼べるコーヒーです。",
     keyword: "ナッツやココアを思わせるバランスのとれた味わい",
     roast: 3,
     acidity: 4,
     body: 3,
+    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ドリップコーヒー",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "湯温：91-94℃",
-      ],
-      tipsText: [
-        "創業当時よりお届けしてきた原点と呼べるコーヒーです。",
-        "バランスのとれた味わいで、失敗しにくいブレンドです。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：中挽き", "湯温：91-94℃"],
+      tipsText: ["創業当時よりお届けしてきた原点と呼べるコーヒーです。", "バランスのとれた味わいで、失敗しにくいブレンドです。"],
       bestTimes: ["いつでも", "朝食", "午後の休憩"],
       foodPairing: ["ナッツ", "リンゴ", "ブルーベリー"],
     },
@@ -229,22 +178,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "decaf-house-blend.jpg",
     logoFile: "decaf-house-blend-logo.jpg",
     threeLetterCode: "DHO",
-    description:
-      "トフィーやココアを思わせる風味にほのかなローストの甘み、バランスのとれた味わい深いコーヒー。創業当時よりお届けしてきた私たちの原点と呼べるコーヒーです。",
+    description: "トフィーやココアを思わせる風味にほのかなローストの甘み、バランスのとれた味わい深いコーヒー。創業当時よりお届けしてきた私たちの原点と呼べるコーヒーです。",
     keyword: "ナッツやココアを思わせるバランスのとれた味わい",
     roast: 3,
     acidity: 3,
     body: 3,
+    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "ドリップコーヒー",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "湯温：91-94℃",
-      ],
-      tipsText: [
-        "カフェインを気にせず、いつでも楽しめます。",
-        "ハウスブレンドと変わらない味わいで、夜でも安心です。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：中挽き", "湯温：91-94℃"],
+      tipsText: ["カフェインを気にせず、いつでも楽しめます。", "ハウスブレンドと変わらない味わいで、夜でも安心です。"],
       bestTimes: ["夜", "就寝前", "カフェインを控えたい時"],
       foodPairing: ["ナッツ", "リンゴ", "ブルーベリー"],
     },
@@ -254,23 +197,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "colombia.jpg",
     logoFile: "colombia-logo.jpg",
     threeLetterCode: "CLG",
-    description:
-      "みずみずしい酸味やほのかなハーブの風味、ナッツを思わせる後味が印象的なコーヒー。多くの火山が存在する、アンデス山脈の高地で栽培されたコーヒーです。",
+    description: "みずみずしい酸味やほのかなハーブの風味、ナッツを思わせる後味が印象的なコーヒー。多くの火山が存在する、アンデス山脈の高地で栽培されたコーヒーです。",
     keyword: "クルミを思わせる香ばしさとハーブのような風味",
     roast: 3,
     acidity: 4,
     body: 3,
+    brewMethods: ["ペーパードリップ", "コーヒープレス"],
     recommended: {
       brewMethodTitle: "ペーパードリップ",
-      brewMethodLines: [
-        "挽き目：中挽き",
-        "湯温：90-93℃",
-        "抽出時間：3-4分",
-      ],
-      tipsText: [
-        "みずみずしい酸味とハーブの風味を引き出すため、丁寧に淹れましょう。",
-        "ナッツを思わせる後味が印象的です。",
-      ],
+      brewMethodLines: ["挽き目：中挽き", "湯温：90-93℃", "抽出時間：3-4分"],
+      tipsText: ["みずみずしい酸味とハーブの風味を引き出すため、丁寧に淹れましょう。", "ナッツを思わせる後味が印象的です。"],
       bestTimes: ["午後", "リラックスタイム", "読書のお供"],
       foodPairing: ["ミルクチョコレート", "ピーカンナッツ"],
     },
@@ -280,22 +216,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "tokyo-roast.jpg",
     logoFile: "tokyo-roast-logo.jpg",
     threeLetterCode: "TYO",
-    description:
-      "なめらかで深みのあるスマトラ産コーヒーにラテンアメリカ産コーヒーをブレンド。シナモンや、タラゴンを思わせるハーブの風味をもつ、まろやかで心温まるコーヒーです。",
+    description: "なめらかで深みのあるスマトラ産コーヒーにラテンアメリカ産コーヒーをブレンド。シナモンや、タラゴンを思わせるハーブの風味をもつ、まろやかで心温まるコーヒーです。",
     keyword: "まろやかで心温まる味わい",
     roast: 3,
     acidity: 3,
     body: 3,
+    brewMethods: ["ペーパードリップ"],
     recommended: {
-      brewMethodTitle: "エスプレッソ / カフェラテ",
-      brewMethodLines: [
-        "挽き目：細挽き",
-        "抽出方法：エスプレッソ",
-      ],
-      tipsText: [
-        "なめらかで深みのある味わいが特徴です。",
-        "ミルクを加えると、まろやかで心温まる一杯になります。",
-      ],
+      brewMethodTitle: "ペーパードリップ",
+      brewMethodLines: ["挽き目：細挽き", "抽出方法：エスプレッソ"],
+      tipsText: ["なめらかで深みのある味わいが特徴です。", "ミルクを加えると、まろやかで心温まる一杯になります。"],
       bestTimes: ["午後", "集中したい時", "エネルギーチャージ"],
       foodPairing: ["シナモン", "レーズン", "オートミール", "チョコレート"],
     },
@@ -305,23 +235,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "sumatra.jpg",
     logoFile: "sumatra-logo.jpg",
     threeLetterCode: "SUM",
-    description:
-      "豊かなハーブや大地を思わせる風味、しっかりとしたコクが特徴の忘れがたい印象のコーヒー。自然豊かなインドネシアのスマトラ島で栽培されたこのコーヒーは創業当初から多くのお客様に愛され続けています。",
+    description: "豊かなハーブや大地を思わせる風味、しっかりとしたコクが特徴の忘れがたい印象のコーヒー。自然豊かなインドネシアのスマトラ島で栽培されたこのコーヒーは創業当初から多くのお客様に愛され続けています。",
     keyword: "大地を思わせる風味としっかりとしたコク",
     roast: 4,
     acidity: 1,
     body: 5,
+    brewMethods: ["コーヒープレス"],
     recommended: {
-      brewMethodTitle: "フレンチプレス",
-      brewMethodLines: [
-        "挽き目：粗挽き",
-        "湯温：93-96℃",
-        "抽出時間：4-5分",
-      ],
-      tipsText: [
-        "フレンチプレスで淹れると、豊かなハーブと大地の風味を楽しめます。",
-        "しっかりとしたコクが特徴の忘れがたい印象のコーヒーです。",
-      ],
+      brewMethodTitle: "コーヒープレス",
+      brewMethodLines: ["挽き目：粗挽き", "湯温：93-96℃", "抽出時間：4-5分"],
+      tipsText: ["コーヒープレスで淹れると、豊かなハーブと大地の風味を楽しめます。", "しっかりとしたコクが特徴の忘れがたい印象のコーヒーです。"],
       bestTimes: ["朝", "集中作業の前", "深夜作業"],
       foodPairing: ["シナモン", "オートミール", "メープル", "バター、トフィー", "チーズ"],
     },
@@ -331,22 +254,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "komodo-dragon-blend.jpg",
     logoFile: "komodo-dragon-blend-logo.jpg",
     threeLetterCode: "KDR",
-    description:
-      "フレッシュハーブやスパイスを思わせる風味が重なり合う、バターのようななめらかさが特徴のコーヒー。アジア/太平洋地域の多様な生産地のコーヒーをブレンドした、力強い味わいです。",
+    description: "フレッシュハーブやスパイスを思わせる風味が重なり合う、バターのようななめらかさが特徴のコーヒー。アジア/太平洋地域の多様な生産地のコーヒーをブレンドした、力強い味わいです。",
     keyword: "フレッシュなハーブの風味とスパイシーな余韻",
     roast: 4,
     acidity: 2,
     body: 4,
+    brewMethods: ["コーヒープレス"],
     recommended: {
-      brewMethodTitle: "コールドブリュー",
-      brewMethodLines: [
-        "挽き目：粗挽き",
-        "抽出時間：冷水で12-24時間",
-      ],
-      tipsText: [
-        "コールドブリューにすると、バターのようななめらかさが引き立ちます。",
-        "フレッシュハーブやスパイスの風味を楽しめます。",
-      ],
+      brewMethodTitle: "コーヒープレス",
+      brewMethodLines: ["挽き目：粗挽き", "抽出時間：冷水で12-24時間"],
+      tipsText: ["コールドブリューにすると、バターのようななめらかさが引き立ちます。", "フレッシュハーブやスパイスの風味を楽しめます。"],
       bestTimes: ["夏", "午後", "リフレッシュしたい時"],
       foodPairing: ["シナモン", "メープル", "バター", "チーズ", "ハーブ"],
     },
@@ -356,23 +273,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "caffe-verona.jpg",
     logoFile: "caffe-verona-logo.jpg",
     threeLetterCode: "VER",
-    description:
-      "ダークココアやカラメルシュガーを思わせる豊かな味わいのコーヒー。チョコレートと相性ぴったりです。人々を魅了するその味わいから、真実の愛のストーリーで知られる街の名前が付けられたロマンスあふれるコーヒーです。",
+    description: "ダークココアやカラメルシュガーを思わせる豊かな味わいのコーヒー。チョコレートと相性ぴったりです。人々を魅了するその味わいから、真実の愛のストーリーで知られる街の名前が付けられたロマンスあふれるコーヒーです。",
     keyword: "ダークココアのような風味とローストの甘みと深み",
     roast: 4,
     acidity: 1,
     body: 5,
+    brewMethods: ["コーヒープレス", "コールドブリュー"],
     recommended: {
-      brewMethodTitle: "フレンチプレス",
-      brewMethodLines: [
-        "挽き目：粗挽き",
-        "湯温：94°C",
-        "抽出時間：4分",
-      ],
-      tipsText: [
-        "ダークココアの風味を引き出すために、じっくり抽出しましょう。",
-        "チョコレートと一緒に楽しむと、相性の良さを実感できます。",
-      ],
+      brewMethodTitle: "コーヒープレス",
+      brewMethodLines: ["挽き目：粗挽き", "湯温：94°C", "抽出時間：4分"],
+      tipsText: ["ダークココアの風味を引き出すために、じっくり抽出しましょう。", "チョコレートと一緒に楽しむと、相性の良さを実感できます。"],
       bestTimes: ["午後", "デザートタイム", "特別な時間"],
       foodPairing: ["ミルクチョコレート", "ダークチョコレート", "カラメル"],
     },
@@ -382,23 +292,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "espresso-roast.jpg",
     logoFile: "espresso-roast-logo.jpg",
     threeLetterCode: "ESP",
-    description:
-      "濃厚なモラセスやキャラメルのような甘みと風味が特徴のコーヒー。すべてのエスプレッソドリンクのベースとして世界中でお出ししている味わいは、他の抽出方法でもお楽しみいただけます。",
+    description: "濃厚なモラセスやキャラメルのような甘みと風味が特徴のコーヒー。すべてのエスプレッソドリンクのベースとして世界中でお出ししている味わいは、他の抽出方法でもお楽しみいただけます。",
     keyword: "豊かな風味とキャラメルのような甘み",
     roast: 4,
     acidity: 2,
     body: 4,
+    brewMethods: ["エスプレッソマシン"],
     recommended: {
       brewMethodTitle: "エスプレッソマシン",
-      brewMethodLines: [
-        "挽き目：極細挽き",
-        "使用量：18-20g",
-        "抽出時間：25-30秒",
-      ],
-      tipsText: [
-        "濃厚なクレマを楽しむため、新鮮な豆を使いましょう。",
-        "すべてのエスプレッソドリンクのベースとして最適です。",
-      ],
+      brewMethodLines: ["挽き目：極細挽き", "使用量：18-20g", "抽出時間：25-30秒"],
+      tipsText: ["濃厚なクレマを楽しむため、新鮮な豆を使いましょう。", "すべてのエスプレッソドリンクのベースとして最適です。"],
       bestTimes: ["朝", "午後", "集中したい時"],
       foodPairing: ["キャラメル", "チョコレート", "スパイス", "ナッツ"],
     },
@@ -408,22 +311,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "italian-roast.jpg",
     logoFile: "italian-roast-logo.jpg",
     threeLetterCode: "ITA",
-    description:
-      "トーストしたマシュマロやダークココアを思わせる風味、ローストの甘みと力強さを感じるコーヒー。南イタリアの伝統的な焙煎方法にインスパイアされた深みのある味わいで、クリームや砂糖と相性ぴったりです。",
+    description: "トーストしたマシュマロやダークココアを思わせる風味、ローストの甘みと力強さを感じるコーヒー。南イタリアの伝統的な焙煎方法にインスパイアされた深みのある味わいで、クリームや砂糖と相性ぴったりです。",
     keyword: "ロースト感のある甘みとカラメルのような風味",
     roast: 5,
     acidity: 1,
     body: 5,
+    brewMethods: ["エスプレッソマシン", "コーヒープレス"],
     recommended: {
-      brewMethodTitle: "エスプレッソ / カプチーノ",
-      brewMethodLines: [
-        "挽き目：極細挽き",
-        "抽出方法：高圧抽出",
-      ],
-      tipsText: [
-        "南イタリアの伝統的な焙煎方法にインスパイアされた深みのある味わいです。",
-        "クリームや砂糖と相性ぴったりです。",
-      ],
+      brewMethodTitle: "エスプレッソマシン",
+      brewMethodLines: ["挽き目：極細挽き", "抽出方法：高圧抽出"],
+      tipsText: ["南イタリアの伝統的な焙煎方法にインスパイアされた深みのある味わいです。", "クリームや砂糖と相性ぴったりです。"],
       bestTimes: ["朝食後", "午後", "デザートタイム"],
       foodPairing: ["ダークチョコレート", "カラメル", "スパイス"],
     },
@@ -433,23 +330,16 @@ export const BEAN_DETAILS: Record<string, BeanDetail> = {
     photoFile: "french-roast.jpg",
     logoFile: "french-roast-logo.jpg",
     threeLetterCode: "FRE",
-    description:
-      "ダークローストによる甘くスモーキーな香りとカラメルを思わせる風味をもつ、力強い味わいのコーヒー。高温でのローストに耐えられるコーヒー豆を選りすぐり、ぎりぎりまでローストしたスターバックスで最も深煎りのコーヒーです。",
+    description: "ダークローストによる甘くスモーキーな香りとカラメルを思わせる風味をもつ、力強い味わいのコーヒー。高温でのローストに耐えられるコーヒー豆を選りすぐり、ぎりぎりまでローストしたスターバックスで最も深煎りのコーヒーです。",
     keyword: "スモーキーさと個性的で力強い風味",
     roast: 5,
     acidity: 1,
     body: 4,
+    brewMethods: ["コーヒープレス", "コールドブリュー"],
     recommended: {
-      brewMethodTitle: "フレンチプレス",
-      brewMethodLines: [
-        "挽き目：粗挽き",
-        "湯温：93-96℃",
-        "抽出時間：4-5分",
-      ],
-      tipsText: [
-        "スターバックスで最も深煎りのコーヒーです。",
-        "甘くスモーキーな香りとカラメルを思わせる風味が特徴です。",
-      ],
+      brewMethodTitle: "コーヒープレス",
+      brewMethodLines: ["挽き目：粗挽き", "湯温：93-96℃", "抽出時間：4-5分"],
+      tipsText: ["スターバックスで最も深煎りのコーヒーです。", "甘くスモーキーな香りとカラメルを思わせる風味が特徴です。"],
       bestTimes: ["朝", "深夜", "集中作業"],
       foodPairing: ["煎ったナッツ", "ローストした野菜", "カラメル"],
     },
