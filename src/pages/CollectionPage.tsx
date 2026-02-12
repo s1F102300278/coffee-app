@@ -1,8 +1,8 @@
 // src/pages/CollectionPage.tsx
 import { useState, useRef, useCallback } from "react";
 import { HOME_BEANS } from "../data/homeBeans";
-import { useBeanPoints } from "../hooks/useBeanPoints";
-import { BeanBadge } from "../components/BeanBadge";
+import { useBeanPoints, getBadgeLevel } from "../hooks/useBeanPoints";
+import { badgeSrc } from "../utils/assets";
 
 type FeedbackState = {
   beanId: string;
@@ -70,6 +70,7 @@ export function CollectionPage() {
       <div className="bean-grid">
         {HOME_BEANS.map((bean) => {
           const currentPoints = getPoints(bean.id);
+          const level = getBadgeLevel(currentPoints);
           const isFeedbackActive = feedback?.beanId === bean.id;
           const feedbackAmount =
             feedback?.type === "enjoy" ? 1 : feedback?.type === "buy" ? 10 : 0;
@@ -77,13 +78,54 @@ export function CollectionPage() {
 
           return (
             <div key={bean.id} className="collection-bean-card">
-              {/* 豆の画像 */}
+              {/* 豆の画像エリア（バッジ画像を表示） */}
               <div
                 className="bean-image"
                 style={{
-                  background: bean.imageColor,
+                  position: "relative",
+                  background: level === 0 ? bean.imageColor : "transparent",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
                 }}
-              />
+              >
+                {level > 0 ? (
+                  // レベル1以上：バッジ画像を表示
+                  <img
+                    src={badgeSrc(bean.id, level as 1 | 2 | 3)}
+                    alt={`${bean.name} Level ${level} Badge`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                    onError={(e) => {
+                      console.error(`Failed to load badge image: ${badgeSrc(bean.id, level as 1 | 2 | 3)}`);
+                      // フォールバック：単色背景 + 星
+                      e.currentTarget.style.display = "none";
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.style.background = bean.imageColor;
+                        const fallback = document.createElement("div");
+                        fallback.style.fontSize = "48px";
+                        fallback.textContent = "⭐".repeat(level);
+                        parent.appendChild(fallback);
+                      }
+                    }}
+                  />
+                ) : (
+                  // レベル0（未所持）：🔒アイコン
+                  <div
+                    style={{
+                      fontSize: 48,
+                      opacity: 0.3,
+                    }}
+                  >
+                    🔒
+                  </div>
+                )}
+              </div>
 
               {/* 豆の情報 */}
               <div style={{ marginBottom: 12 }}>
@@ -98,12 +140,8 @@ export function CollectionPage() {
                   {bean.name}
                 </div>
 
-                <div style={{ marginBottom: 8 }}>
-                  <BeanBadge points={currentPoints} />
-                </div>
-
                 <div style={{ fontSize: 12, color: "#6b7280" }}>
-                  {currentPoints} pt
+                  {level > 0 ? `Lv${level} - ${currentPoints} pt` : `${currentPoints} pt`}
                 </div>
               </div>
 
