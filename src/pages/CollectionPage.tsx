@@ -13,7 +13,7 @@ type FeedbackState = {
 export function CollectionPage() {
   const { addPoints, removePoints, getPoints } = useBeanPoints();
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const longPressTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const longPressTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   const showFeedback = useCallback(
     (beanId: string, type: "enjoy" | "buy", action: "add" | "remove") => {

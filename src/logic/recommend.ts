@@ -7,7 +7,7 @@ import type { CoffeeBean } from "../data/beans";
 // トップ2推薦（後方互換性のため維持）
 // 注意: 新しい診断ロジックを使用する場合は diagnosisEngine.ts を直接使用してください
 export function recommendTop2(
-  scores: Scores,
+  _scores: Scores,
   beans: CoffeeBean[]
 ): { first: CoffeeBean; second: CoffeeBean } | null {
   // ダミー実装（既存UIとの互換性のため）

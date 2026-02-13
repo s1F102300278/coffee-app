@@ -8,7 +8,7 @@ type ProfileEditPageProps = {
 };
 
 export function ProfileEditPage({ onBack }: ProfileEditPageProps) {
-  const { username, setUsername, iconId, setIconId, selectedIcon } = useProfile();
+  const { username, setUsername, iconId, setIconId} = useProfile();
   
   // 編集用のローカルstate
   const [editUsername, setEditUsername] = useState(username);
