@@ -1,5 +1,5 @@
 // src/pages/CollectionPage.tsx
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { HOME_BEANS } from "../data/homeBeans";
 import { useBeanPoints, getBadgeLevel } from "../hooks/useBeanPoints";
 import { badgeSrc } from "../utils/assets";
@@ -13,7 +13,6 @@ type FeedbackState = {
 export function CollectionPage() {
   const { addPoints, removePoints, getPoints } = useBeanPoints();
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const longPressTimerRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   const showFeedback = useCallback(
     (beanId: string, type: "enjoy" | "buy", action: "add" | "remove") => {
@@ -23,41 +22,22 @@ export function CollectionPage() {
     []
   );
 
-  const handleTouchStart = useCallback(
+  const handleAdd = useCallback(
     (beanId: string, type: "enjoy" | "buy", amount: number) => {
-      const key = `${beanId}-${type}`;
-      longPressTimerRef.current[key] = setTimeout(() => {
-        removePoints(beanId, amount);
-        showFeedback(beanId, type, "remove");
-      }, 1200);
-    },
-    [removePoints, showFeedback]
-  );
-
-  const handleTouchEnd = useCallback(
-    (beanId: string, type: "enjoy" | "buy", amount: number) => {
-      const key = `${beanId}-${type}`;
-      const timer = longPressTimerRef.current[key];
-
-      if (timer) {
-        clearTimeout(timer);
-        delete longPressTimerRef.current[key];
-
-        addPoints(beanId, amount);
-        showFeedback(beanId, type, "add");
-      }
+      addPoints(beanId, amount);
+      showFeedback(beanId, type, "add");
     },
     [addPoints, showFeedback]
   );
 
-  const handleTouchCancel = useCallback((beanId: string, type: "enjoy" | "buy") => {
-    const key = `${beanId}-${type}`;
-    const timer = longPressTimerRef.current[key];
-    if (timer) {
-      clearTimeout(timer);
-      delete longPressTimerRef.current[key];
-    }
-  }, []);
+  const handleRemove = useCallback(
+    (beanId: string, type: "enjoy" | "buy", amount: number, e: React.MouseEvent) => {
+      e.stopPropagation(); // 親ボタンのクリックイベントを防止
+      removePoints(beanId, amount);
+      showFeedback(beanId, type, "remove");
+    },
+    [removePoints, showFeedback]
+  );
 
   return (
     <div style={{ padding: "20px 16px 100px" }}>
@@ -154,29 +134,93 @@ export function CollectionPage() {
                   position: "relative",
                 }}
               >
+                {/* 楽しんだボタン */}
                 <button
-                  onMouseDown={() => handleTouchStart(bean.id, "enjoy", 1)}
-                  onMouseUp={() => handleTouchEnd(bean.id, "enjoy", 1)}
-                  onMouseLeave={() => handleTouchCancel(bean.id, "enjoy")}
-                  onTouchStart={() => handleTouchStart(bean.id, "enjoy", 1)}
-                  onTouchEnd={() => handleTouchEnd(bean.id, "enjoy", 1)}
-                  onTouchCancel={() => handleTouchCancel(bean.id, "enjoy")}
+                  onClick={() => handleAdd(bean.id, "enjoy", 1)}
                   className="point-button enjoy"
+                  style={{ position: "relative" }}
                 >
+                  {/* マイナスボタン */}
+                  <button
+                    onClick={(e) => handleRemove(bean.id, "enjoy", 1, e)}
+                    style={{
+                      position: "absolute",
+                      top: 4,
+                      right: 4,
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      background: "rgba(0, 0, 0, 0.2)",
+                      border: "none",
+                      color: "white",
+                      fontSize: 16,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0,
+                      lineHeight: 1,
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(0, 0, 0, 0.4)";
+                      e.currentTarget.style.transform = "scale(1.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(0, 0, 0, 0.2)";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    −
+                  </button>
+
                   <span style={{ fontSize: 16, marginBottom: 2 }}>☕</span>
                   <span style={{ fontSize: 11 }}>楽しんだ</span>
                   <span style={{ fontSize: 12, fontWeight: 700 }}>+1pt</span>
                 </button>
 
+                {/* 買ったボタン */}
                 <button
-                  onMouseDown={() => handleTouchStart(bean.id, "buy", 10)}
-                  onMouseUp={() => handleTouchEnd(bean.id, "buy", 10)}
-                  onMouseLeave={() => handleTouchCancel(bean.id, "buy")}
-                  onTouchStart={() => handleTouchStart(bean.id, "buy", 10)}
-                  onTouchEnd={() => handleTouchEnd(bean.id, "buy", 10)}
-                  onTouchCancel={() => handleTouchCancel(bean.id, "buy")}
+                  onClick={() => handleAdd(bean.id, "buy", 10)}
                   className="point-button buy"
+                  style={{ position: "relative" }}
                 >
+                  {/* マイナスボタン */}
+                  <button
+                    onClick={(e) => handleRemove(bean.id, "buy", 10, e)}
+                    style={{
+                      position: "absolute",
+                      top: 4,
+                      right: 4,
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      background: "rgba(0, 0, 0, 0.2)",
+                      border: "none",
+                      color: "white",
+                      fontSize: 16,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0,
+                      lineHeight: 1,
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(0, 0, 0, 0.4)";
+                      e.currentTarget.style.transform = "scale(1.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(0, 0, 0, 0.2)";
+                      e.currentTarget.style.transform = "scale(1)";
+                    }}
+                  >
+                    −
+                  </button>
+
                   <span style={{ fontSize: 16, marginBottom: 2 }}>🛒</span>
                   <span style={{ fontSize: 11 }}>買った</span>
                   <span style={{ fontSize: 12, fontWeight: 700 }}>+10pt</span>
@@ -223,11 +267,10 @@ export function CollectionPage() {
           }}
         >
           <li>
-            <strong>通常タップ：</strong>「楽しんだ」+1pt /「買った」+10pt
+            <strong>ボタンをタップ：</strong>「楽しんだ」+1pt /「買った」+10pt
           </li>
           <li>
-            <strong>長押し（1.2秒）：</strong>「楽しんだ」−1pt /
-            「買った」−10pt
+            <strong>右上の「−」ボタン：</strong>「楽しんだ」−1pt /「買った」−10pt
           </li>
           <li>30pt以上で Lv1、50pt以上で Lv2、100pt以上で Lv3</li>
           <li>100pt以降もポイントは加算され続けます</li>
