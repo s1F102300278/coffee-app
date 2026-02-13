@@ -26,7 +26,7 @@ export function BeanDetailPage({ beanId, onBack }: BeanDetailPageProps) {
   // ローストレベル表示用のラベル
   const getRoastLabel = (level: number): string => {
     if (level === 1) return "STARBUCKS® BLONDE ROAST";
-    if (level === 2) return "STARBUCKS® BLONDE ROAST";
+    if (level === 2) return "STARBUCKS® MEDIUM ROAST";
     if (level === 3) return "STARBUCKS® MEDIUM ROAST";
     if (level === 4) return "STARBUCKS® DARK ROAST";
     return "STARBUCKS® DARK ROAST";
