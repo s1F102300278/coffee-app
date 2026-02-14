@@ -22,7 +22,7 @@ export function HomePage() {
     <div style={{ padding: "20px 16px 100px" }}>
       <header className="page-header">
         <h1 className="page-title">ホーム</h1>
-        <p className="page-subtitle">今日はどんな一杯にしますか？</p>
+        <p className="page-subtitle">スタバのコアのコーヒー豆を紹介！今日はどんな一杯にしますか？</p>
       </header>
 
       {/* コア豆 */}
