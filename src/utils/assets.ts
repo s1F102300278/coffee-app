@@ -23,7 +23,7 @@ export function beanLogoSrc(filename: string): string {
 const BEAN_ID_TO_BADGE_PREFIX: Record<string, string> = {
   "lightnote": "lightnote-blend",
   "blonde-espresso": "blonde-espresso-roast",
-  "breakfast": "breakfast-blend",
+  "breakfast": "breakefast-blend", // 実際のファイル名に合わせる（typo含む）
   "siren": "siren-blend",
   "kenya": "kenya",
   "pike-place": "pike-place-roast",

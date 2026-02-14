@@ -134,7 +134,7 @@ export function CollectionPage() {
                   position: "relative",
                 }}
               >
-                {/* 楽しんだボタン */}
+                {/* 楽しんだボタン（Drink） */}
                 <button
                   onClick={() => handleAdd(bean.id, "enjoy", 1)}
                   className="point-button enjoy"
@@ -176,11 +176,12 @@ export function CollectionPage() {
                   </button>
 
                   <span style={{ fontSize: 16, marginBottom: 2 }}>☕</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#1e3932", marginBottom: 2 }}>Drink</span>
                   <span style={{ fontSize: 11 }}>楽しんだ</span>
                   <span style={{ fontSize: 12, fontWeight: 700 }}>+1pt</span>
                 </button>
 
-                {/* 買ったボタン */}
+                {/* 買ったボタン（Buy） */}
                 <button
                   onClick={() => handleAdd(bean.id, "buy", 10)}
                   className="point-button buy"
@@ -222,6 +223,7 @@ export function CollectionPage() {
                   </button>
 
                   <span style={{ fontSize: 16, marginBottom: 2 }}>🛒</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#1e3932", marginBottom: 2 }}>Buy</span>
                   <span style={{ fontSize: 11 }}>買った</span>
                   <span style={{ fontSize: 12, fontWeight: 700 }}>+10pt</span>
                 </button>
@@ -267,10 +269,13 @@ export function CollectionPage() {
           }}
         >
           <li>
-            <strong>ボタンをタップ：</strong>「楽しんだ」+1pt /「買った」+10pt
+            <strong>Drinkボタン：</strong>楽しんだ +1pt
           </li>
           <li>
-            <strong>右上の「−」ボタン：</strong>「楽しんだ」−1pt /「買った」−10pt
+            <strong>Buyボタン：</strong>買った +10pt
+          </li>
+          <li>
+            <strong>右上の「−」ボタン：</strong>ポイントを減らす
           </li>
           <li>30pt以上で Lv1、50pt以上で Lv2、100pt以上で Lv3</li>
           <li>100pt以降もポイントは加算され続けます</li>
